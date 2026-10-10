@@ -3734,3 +3734,4 @@
 {"_e":"metro:bundling:progress","_t":1791619724494,"id":"6","progress":0,"total":1,"current":0}
 {"_e":"metro:bundling:done","_t":1791619724616,"id":"6","total":1,"ms":123.2696}
 {"_e":"metro:client_log","_t":1791619728532,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.196.37.88:5000/api"]}
+{"_e":"metro:client_log","_t":1791619958926,"level":"error","data":["Text strings must be rendered within a <Text> component."]}
