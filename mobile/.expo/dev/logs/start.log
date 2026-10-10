@@ -3729,3 +3729,8 @@
 {"_e":"metro:client_log","_t":1791617868887,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.18.180.88:5000/api"]}
 {"_e":"metro:client_log","_t":1791618354771,"level":"error","data":["Text strings must be rendered within a <Text> component."]}
 {"_e":"metro:bundling:failed","_t":1791618394524,"id":null,"message":"SyntaxError: D:\\TMS_7 (2)\\TMS_7\\mobile\\src\\screens\\profile\\ProfileScreen.js: Unexpected token (269:12)\n\n  267 |               />\n  268 |             ))}\n> 269 |           </\n      |             ^","importStack":null,"filename":"src\\screens\\profile\\ProfileScreen.js","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1791619724492,"id":"6","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791619724493,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791619724494,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1791619724616,"id":"6","total":1,"ms":123.2696}
+{"_e":"metro:client_log","_t":1791619728532,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.196.37.88:5000/api"]}
