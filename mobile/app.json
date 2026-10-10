@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "TMS Facilities & Maintenance",
+    "slug": "tms-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "primaryColor": "#4F46E5",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/tms-logo.png",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/tms-mark.png",
+        "backgroundColor": "#0F172A"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/tms-logo.png"
+    }
+  }
+}
