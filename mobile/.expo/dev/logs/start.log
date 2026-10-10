@@ -3702,3 +3702,30 @@
 {"_e":"metro:bundling:progress","_t":1791617653642,"id":"1","progress":0.9730695286031805,"total":1549,"current":1528}
 {"_e":"metro:bundling:progress","_t":1791617653742,"id":"1","progress":0.9987150659855539,"total":1556,"current":1555}
 {"_e":"metro:bundling:failed","_t":1791617653775,"id":"1","message":"Unable to resolve \"../../../assets/tms-mark.png\" from \"src\\screens\\auth\\LoginScreen.js\"\n  156 |           <View style={styles.logoFrame}>\n  157 |             <Image\n> 158 |               source={require('../../../assets/tms-mark.png')}\n      |                                ^\n  159 |               style={styles.logoImage}\n  160 |               resizeMode=\"contain\"\n  161 |               accessibilityLabel=\"TMS campus maintenance logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\screens\\auth\\LoginScreen.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AuthNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/auth/LoginScreen\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./AuthNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../../assets/tms-mark.png","originModulePath":"src\\screens\\auth\\LoginScreen.js"}
+{"_e":"root:init","_t":1791617833639,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791617833640,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791617833642,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791617833928,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791617834303,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791617834649,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791617838906,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791617858746,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791617858747,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617858750,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617858850,"id":"1","progress":0.053770216341104814,"total":207,"current":48}
+{"_e":"metro:bundling:progress","_t":1791617858950,"id":"1","progress":0.20036281179138324,"total":315,"current":141}
+{"_e":"metro:bundling:progress","_t":1791617859050,"id":"1","progress":0.2862458174991294,"total":514,"current":275}
+{"_e":"metro:bundling:progress","_t":1791617859150,"id":"1","progress":0.391561188999247,"total":668,"current":418}
+{"_e":"metro:bundling:progress","_t":1791617859251,"id":"1","progress":0.6170402968138793,"total":732,"current":575}
+{"_e":"metro:bundling:progress","_t":1791617859351,"id":"1","progress":0.6271789559028872,"total":894,"current":708}
+{"_e":"metro:bundling:progress","_t":1791617859451,"id":"1","progress":0.6415695886197617,"total":1020,"current":817}
+{"_e":"metro:bundling:progress","_t":1791617859552,"id":"1","progress":0.7206564362975578,"total":1198,"current":1017}
+{"_e":"metro:bundling:progress","_t":1791617859653,"id":"1","progress":0.8086471818644355,"total":1330,"current":1196}
+{"_e":"metro:bundling:progress","_t":1791617859774,"id":"1","progress":0.8838412138940637,"total":1403,"current":1319}
+{"_e":"metro:bundling:progress","_t":1791617859873,"id":"1","progress":0.9548591563979065,"total":1533,"current":1498}
+{"_e":"metro:bundling:progress","_t":1791617859987,"id":"1","progress":0.9987150659855539,"total":1556,"current":1555}
+{"_e":"metro:bundling:progress","_t":1791617860051,"id":"1","progress":0.999,"total":1556,"current":1556}
+{"_e":"metro:bundling:done","_t":1791617860185,"id":"1","total":1556,"ms":1438.3926}
+{"_e":"metro:client_log","_t":1791617868887,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.18.180.88:5000/api"]}
+{"_e":"metro:client_log","_t":1791618354771,"level":"error","data":["Text strings must be rendered within a <Text> component."]}
+{"_e":"metro:bundling:failed","_t":1791618394524,"id":null,"message":"SyntaxError: D:\\TMS_7 (2)\\TMS_7\\mobile\\src\\screens\\profile\\ProfileScreen.js: Unexpected token (269:12)\n\n  267 |               />\n  268 |             ))}\n> 269 |           </\n      |             ^","importStack":null,"filename":"src\\screens\\profile\\ProfileScreen.js","targetModuleName":null,"originModulePath":null}

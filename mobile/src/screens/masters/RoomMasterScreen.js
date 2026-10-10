@@ -1,54 +1,84 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   FlatList,
   TextInput,
+  TouchableOpacity,
+  Pressable,
   Modal,
   StyleSheet,
   Alert,
   KeyboardAvoidingView,
   Platform,
   RefreshControl,
-  Animated,
-  StatusBar
+  StatusBar,
+  ScrollView,
 } from 'react-native';
+
 import { DrawerActions } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { roomApi, departmentApi, programmeApi, blockApi } from '../../api/masters';
+
+import {
+  roomApi,
+  departmentApi,
+  programmeApi,
+  blockApi,
+} from '../../api/masters';
+
 import { useTheme } from '../../context/ThemeContext';
 import ResponsiveContainer from '../../components/ResponsiveContainer';
 import AppHeader from '../../components/AppHeader';
 import CustomPicker from '../../components/CustomPicker';
 import SearchBar from '../../components/SearchBar';
-import Button from '../../components/Button';
-import EmptyState from '../../components/EmptyState';
-import ConfirmDialog from '../../components/ConfirmDialog';
-import PressableScale from '../../components/PressableScale';
 import { CardSkeleton } from '../../components/LoadingSkeleton';
 
 const PURPLE = '#7C5CFF';
 
+const getId = (value) => {
+  if (value && typeof value === 'object') {
+    return value._id || value.id || '';
+  }
+
+  return value || '';
+};
+
+const getName = (value, records = []) => {
+  if (value && typeof value === 'object') {
+    return (
+      value.name ||
+      value.departmentName ||
+      value.programmeName ||
+      ''
+    );
+  }
+
+  if (!value) return '';
+
+  const record = records.find(
+    (item) => String(item._id) === String(value)
+  );
+
+  return record?.name || '';
+};
+
 const RoomMasterScreen = ({ navigation }) => {
   const { theme, isDark } = useTheme();
-
   const colors = theme?.colors || {};
-  const shadows = theme?.shadows || {};
 
-  // Dashboard-matching design palette with safe fallbacks
   const palette = {
     background: colors.background || (isDark ? '#0B1020' : '#F5F6FC'),
-    card: colors.card || colors.surface || (isDark ? '#151B2D' : '#FFFFFF'),
-    surface: colors.surface || colors.card || (isDark ? '#151B2D' : '#FFFFFF'),
-    text: colors.text || (isDark ? '#F5F7FF' : '#151936'),
-    secondary: colors.textSecondary || (isDark ? '#A8B0C5' : '#69718B'),
-    muted: colors.textMuted || (isDark ? '#8D96AE' : '#8A91A7'),
-    border: colors.border || (isDark ? '#283149' : '#E8EAF4'),
+    surface: colors.surface || (isDark ? '#151B2D' : '#FFFFFF'),
+    card: colors.card || colors.surface || '#FFFFFF',
+    text: colors.text || (isDark ? '#F5F7FF' : '#171936'),
+    secondary: colors.textSecondary || (isDark ? '#A4ADC4' : '#737B93'),
+    muted: colors.textMuted || (isDark ? '#8A93AA' : '#8A91A7'),
+    border: colors.border || (isDark ? '#293149' : '#E8EAF4'),
     primary: colors.primary || PURPLE,
-    warning: colors.warning || '#F5A524',
-    accent: colors.accent || '#38BDF8',
-    success: colors.success || '#22C55E',
-    danger: colors.danger || '#EF4444'
+    primaryLight: colors.primaryLight || (isDark ? '#292344' : '#EEE8FF'),
+    danger: colors.danger || '#EF4444',
+    dangerLight: colors.dangerLight || (isDark ? '#3B202B' : '#FEECEE'),
+    success: colors.success || '#22A875',
   };
 
   const [rooms, setRooms] = useState([]);
@@ -59,52 +89,47 @@ const RoomMasterScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const [departmentId, setDepartmentId] = useState('');
   const [programmeId, setProgrammeId] = useState('');
   const [blockId, setBlockId] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
-  const [saving, setSaving] = useState(false);
 
-  // Entrance animations matching DashboardScreen
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(14)).current;
+  const fetchData = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
 
-  useEffect(() => {
-    const animation = Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 350,
-        useNativeDriver: true
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 350,
-        useNativeDriver: true
-      })
-    ]);
-    animation.start();
-    return () => animation.stop();
-  }, [fadeAnim, slideAnim]);
-
-  const fetchData = useCallback(async () => {
     try {
-      const [roomList, deptList, progList, blockList] = await Promise.all([
+      const [
+        roomList,
+        departmentList,
+        programmeList,
+        blockList,
+      ] = await Promise.all([
         roomApi.getAll(),
         departmentApi.getAll(),
         programmeApi.getAll(),
-        blockApi.getAll()
+        blockApi.getAll(),
       ]);
-      setRooms(roomList || []);
-      setDepartments(deptList || []);
-      setProgrammes(progList || []);
-      setBlocks(blockList || []);
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', 'Failed to load rooms.');
+
+      setRooms(Array.isArray(roomList) ? roomList : []);
+      setDepartments(Array.isArray(departmentList) ? departmentList : []);
+      setProgrammes(Array.isArray(programmeList) ? programmeList : []);
+      setBlocks(Array.isArray(blockList) ? blockList : []);
+    } catch (error) {
+      console.error('Error fetching room data:', error);
+
+      Alert.alert(
+        'Unable to Load',
+        'Failed to load rooms. Please try again.'
+      );
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -115,245 +140,498 @@ const RoomMasterScreen = ({ navigation }) => {
     fetchData();
   }, [fetchData]);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchData();
-  }, [fetchData]);
+  const filteredProgrammes = programmes.filter((programme) => {
+    if (!departmentId) return true;
 
-  const filteredBlocks = blocks.filter((b) => {
-    const dId = b.departmentId?._id || b.departmentId;
-    const pId = b.programmeId?._id || b.programmeId;
-    return (!departmentId || dId === departmentId) && (!programmeId || pId === programmeId);
+    return (
+      String(getId(programme.departmentId)) === String(departmentId)
+    );
   });
+
+  const filteredBlocks = blocks.filter((block) => {
+    const blockDepartmentId = getId(block.departmentId);
+    const blockProgrammeId = getId(block.programmeId);
+
+    const matchesDepartment =
+      !departmentId ||
+      String(blockDepartmentId) === String(departmentId);
+
+    const matchesProgramme =
+      !programmeId ||
+      String(blockProgrammeId) === String(programmeId);
+
+    return matchesDepartment && matchesProgramme;
+  });
+
+  const departmentOptions = departments.map((department) => ({
+    label: department.shortName
+      ? `${department.name} (${department.shortName})`
+      : department.name,
+    value: department._id,
+  }));
+
+  const programmeOptions = filteredProgrammes.map((programme) => ({
+    label: programme.shortName
+      ? `${programme.name} (${programme.shortName})`
+      : programme.name,
+    value: programme._id,
+  }));
+
+  const blockOptions = filteredBlocks.map((block) => ({
+    label: block.name || 'Unnamed Block',
+    value: block._id,
+  }));
 
   const openAddModal = () => {
     setEditingRoom(null);
-    setDepartmentId(departments[0]?._id || '');
+    setDepartmentId('');
     setProgrammeId('');
-    setBlockId(blocks[0]?._id || '');
+    setBlockId('');
     setRoomNumber('');
     setModalVisible(true);
   };
 
   const openEditModal = (room) => {
     setEditingRoom(room);
-    setDepartmentId(room.departmentId?._id || room.departmentId || '');
-    setProgrammeId(room.programmeId?._id || room.programmeId || '');
-    setBlockId(room.blockId?._id || room.blockId || '');
-    setRoomNumber(room.roomNumber);
+    setDepartmentId(getId(room.departmentId));
+    setProgrammeId(getId(room.programmeId));
+    setBlockId(getId(room.blockId));
+    setRoomNumber(String(room.roomNumber || ''));
     setModalVisible(true);
   };
 
+  const closeModal = () => {
+    if (saving) return;
+
+    setModalVisible(false);
+    setEditingRoom(null);
+  };
+
   const handleSave = async () => {
-    if (!roomNumber.trim() || !blockId) {
-      Alert.alert('Validation Error', 'Room number and campus block are required.');
+    const cleanRoomNumber = roomNumber.trim();
+
+    if (!cleanRoomNumber || !blockId) {
+      Alert.alert(
+        'Required Fields',
+        'Room number and campus block are required.'
+      );
       return;
     }
 
+    if (saving) return;
+
     setSaving(true);
+
     try {
       const payload = {
-        roomNumber: roomNumber.trim(),
+        roomNumber: cleanRoomNumber,
         blockId,
         departmentId: departmentId || undefined,
-        programmeId: programmeId || undefined
+        programmeId: programmeId || undefined,
       };
 
       if (editingRoom) {
         await roomApi.update(editingRoom._id, payload);
-        Alert.alert('Success ✅', 'Room updated successfully.');
+
+        Alert.alert(
+          'Updated Successfully',
+          'Room details have been updated.'
+        );
       } else {
         await roomApi.create(payload);
-        Alert.alert('Success 🎉', 'New room registered.');
+
+        Alert.alert(
+          'Created Successfully',
+          'New room has been registered.'
+        );
       }
+
       setModalVisible(false);
-      fetchData();
-    } catch (err) {
-      Alert.alert('Error', err.response?.data?.message || 'Failed to save room.');
+      setEditingRoom(null);
+
+      await fetchData();
+    } catch (error) {
+      Alert.alert(
+        'Save Failed',
+        error.response?.data?.message ||
+          'Unable to save room. Please try again.'
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  const confirmDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      await roomApi.delete(deleteTarget._id);
-      fetchData();
-    } catch (err) {
-      Alert.alert('Error', err.response?.data?.message || 'Failed to delete room.');
-    } finally {
-      setDeleteTarget(null);
-    }
+  const confirmDelete = (room) => {
+    Alert.alert(
+      'Delete Room',
+      `Are you sure you want to delete Room ${room.roomNumber}?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await roomApi.delete(room._id);
+              await fetchData();
+
+              Alert.alert(
+                'Deleted Successfully',
+                'Room has been deleted.'
+              );
+            } catch (error) {
+              Alert.alert(
+                'Delete Failed',
+                error.response?.data?.message ||
+                  'Unable to delete this room.'
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
-  const filtered = rooms.filter(
-    (r) =>
-      r.roomNumber?.toLowerCase().includes(search.toLowerCase()) ||
-      r.blockId?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      r.departmentId?.name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredRooms = rooms.filter((room) => {
+    const query = search.trim().toLowerCase();
 
-  // Statistics derived for the metrics section
-  const uniqueBlocksCount = new Set(rooms.map((r) => r.blockId?._id || r.blockId).filter(Boolean)).size;
-  const uniqueDeptsCount = new Set(rooms.map((r) => r.departmentId?._id || r.departmentId).filter(Boolean)).size;
+    const number = String(room.roomNumber || '').toLowerCase();
+    const blockName = getName(room.blockId, blocks).toLowerCase();
+    const departmentName = getName(
+      room.departmentId,
+      departments
+    ).toLowerCase();
+    const programmeName = getName(
+      room.programmeId,
+      programmes
+    ).toLowerCase();
 
-  const metricCards = [
-    {
-      title: 'Total rooms',
-      value: rooms.length,
-      subtitle: `${filtered.length} matching`,
-      icon: 'key-outline',
-      color: '#5B8CFF',
-      tint: 'rgba(91,140,255,0.14)'
-    },
-    {
-      title: 'Campus blocks',
-      value: uniqueBlocksCount,
-      subtitle: `${blocks.length} configured`,
-      icon: 'cube-outline',
-      color: '#F5A524',
-      tint: 'rgba(245,165,36,0.14)'
-    },
-    {
-      title: 'Departments',
-      value: uniqueDeptsCount,
-      subtitle: `${departments.length} faculties`,
-      icon: 'business-outline',
-      color: '#22C55E',
-      tint: 'rgba(34,197,94,0.14)'
-    }
-  ];
+    return (
+      number.includes(query) ||
+      blockName.includes(query) ||
+      departmentName.includes(query) ||
+      programmeName.includes(query)
+    );
+  });
+
+  const uniqueBlockCount = new Set(
+    rooms.map((room) => getId(room.blockId)).filter(Boolean)
+  ).size;
+
+  const uniqueDepartmentCount = new Set(
+    rooms.map((room) => getId(room.departmentId)).filter(Boolean)
+  ).size;
+
+  const renderRoom = ({ item, index }) => {
+    const blockName = getName(item.blockId, blocks);
+    const departmentName = getName(item.departmentId, departments);
+    const programmeName = getName(item.programmeId, programmes);
+
+    return (
+      <View
+        style={[
+          styles.roomCard,
+          {
+            backgroundColor: palette.card,
+            borderColor: palette.border,
+          },
+        ]}
+      >
+        <View style={styles.cardMain}>
+          <View
+            style={[
+              styles.roomIcon,
+              { backgroundColor: palette.primaryLight },
+            ]}
+          >
+            <Ionicons
+              name="key-outline"
+              size={25}
+              color={palette.primary}
+            />
+          </View>
+
+          <View style={styles.roomInfo}>
+            <Text
+              style={[styles.roomName, { color: palette.text }]}
+              numberOfLines={2}
+            >
+              Room {item.roomNumber || '—'}
+            </Text>
+
+            <View style={styles.roomBadge}>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={13}
+                color={palette.success}
+              />
+
+              <Text
+                style={[styles.roomBadgeText, { color: palette.success }]}
+              >
+                REGISTERED ROOM
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.actions}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={`Edit room ${item.roomNumber}`}
+              style={[
+                styles.actionButton,
+                { backgroundColor: palette.primaryLight },
+              ]}
+              onPress={() => openEditModal(item)}
+              activeOpacity={0.75}
+            >
+              <Ionicons
+                name="create-outline"
+                size={19}
+                color={palette.primary}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={`Delete room ${item.roomNumber}`}
+              style={[
+                styles.actionButton,
+                { backgroundColor: palette.dangerLight },
+              ]}
+              onPress={() => confirmDelete(item)}
+              activeOpacity={0.75}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={18}
+                color={palette.danger}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View
+          style={[styles.cardDivider, { backgroundColor: palette.border }]}
+        />
+
+        <View style={styles.metaRow}>
+          <Ionicons
+            name="business-outline"
+            size={15}
+            color={palette.primary}
+          />
+
+          <Text
+            style={[styles.metaText, { color: palette.secondary }]}
+            numberOfLines={1}
+          >
+            {blockName || 'Block not assigned'}
+          </Text>
+        </View>
+
+        {departmentName ? (
+          <View style={[styles.metaRow, styles.metaSpacing]}>
+            <Ionicons
+              name="layers-outline"
+              size={15}
+              color={palette.primary}
+            />
+
+            <Text
+              style={[styles.metaText, { color: palette.secondary }]}
+              numberOfLines={1}
+            >
+              {departmentName}
+            </Text>
+          </View>
+        ) : null}
+
+        {programmeName ? (
+          <View style={[styles.metaRow, styles.metaSpacing]}>
+            <Ionicons
+              name="school-outline"
+              size={15}
+              color={palette.primary}
+            />
+
+            <Text
+              style={[styles.metaText, { color: palette.secondary }]}
+              numberOfLines={1}
+            >
+              {programmeName}
+            </Text>
+          </View>
+        ) : null}
+
+        <View style={[styles.cardFooter, { borderTopColor: palette.border }]}>
+          <View style={styles.footerMeta}>
+            <Ionicons
+              name="location-outline"
+              size={14}
+              color={palette.muted}
+            />
+
+            <Text style={[styles.footerText, { color: palette.secondary }]}>
+              Campus facilities
+            </Text>
+          </View>
+
+          <Text style={[styles.indexText, { color: palette.muted }]}>
+            #{String(index + 1).padStart(2, '0')}
+          </Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
-    <ResponsiveContainer style={{ backgroundColor: palette.background }}>
+    <ResponsiveContainer>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={palette.background}
       />
 
-      <AppHeader
-        title="Room Master"
-        subtitle="Classrooms, laboratories & facility units"
-        showBack={navigation?.canGoBack?.()}
-        onBackPress={() => navigation.goBack()}
-        onMenuPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        showNotification={false}
-        showProfile={false}
-      />
-
-      <Animated.View
+      <View
         style={[
           styles.container,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }]
-          }
+          { backgroundColor: palette.background },
         ]}
       >
+        <AppHeader
+          title="Room Master"
+          subtitle="Classrooms, laboratories & facility units"
+          onMenuPress={() =>
+            navigation.dispatch(DrawerActions.openDrawer())
+          }
+          showNotification={false}
+          showProfile={false}
+        />
+
         <FlatList
-          data={filtered}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.listContent}
+          data={loading ? [] : filteredRooms}
+          keyExtractor={(item) => String(item._id)}
+          renderItem={renderRoom}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={onRefresh}
+              onRefresh={() => fetchData(true)}
               tintColor={palette.primary}
               colors={[palette.primary]}
             />
           }
           ListHeaderComponent={
             <View>
-              {/* Dashboard-style Welcome / Hero Card */}
-              <View style={styles.welcomeCard}>
-                <View style={styles.welcomeGlowOne} />
-                <View style={styles.welcomeGlowTwo} />
+              {/* Hero section */}
+              <View style={styles.heroCard}>
+                <View style={styles.heroCircleOne} />
+                <View style={styles.heroCircleTwo} />
 
-                <View style={styles.welcomeContent}>
-                  <View style={styles.welcomeEyebrow}>
-                    <View style={styles.liveDot} />
-                    <Text style={styles.welcomeEyebrowText}>CAMPUS SPACES DIRECTORY</Text>
+                <View style={styles.heroTopRow}>
+                  <View style={styles.heroIcon}>
+                    <Ionicons
+                      name="key"
+                      size={27}
+                      color="#FFFFFF"
+                    />
                   </View>
 
-                  <Text style={styles.welcomeTitle}>
-                    Room Management
-                  </Text>
+                  <View style={styles.heroBadge}>
+                    <Ionicons
+                      name="grid-outline"
+                      size={14}
+                      color="#FFFFFF"
+                    />
 
-                  <Text style={styles.welcomeSubtitle}>
-                    Organize, track, and assign classrooms, labs, and office facilities across all blocks.
-                  </Text>
+                    <Text style={styles.heroBadgeText}>MASTER DATA</Text>
+                  </View>
                 </View>
 
-                <View style={styles.welcomeIcon}>
-                  <Ionicons name="key-outline" size={28} color="#FFFFFF" />
-                </View>
+                <Text style={styles.heroTitle}>Room Management</Text>
 
-                <View style={styles.welcomeBottomRow}>
-                  <View style={styles.welcomeStatusPill}>
-                    <Ionicons name="shield-checkmark-outline" size={13} color="#FFFFFF" />
-                    <Text style={styles.welcomeStatusText}>Active Directory</Text>
+                <Text style={styles.heroDescription}>
+                  Manage campus room numbers and organise rooms by building,
+                  programme and department.
+                </Text>
+
+                <View style={styles.heroDivider} />
+
+                <View style={styles.heroStats}>
+                  <View style={styles.heroStatItem}>
+                    <Text style={styles.heroStatValue}>
+                      {rooms.length}
+                    </Text>
+
+                    <Text style={styles.heroStatLabel}>Total rooms</Text>
                   </View>
 
-                  <Text style={styles.welcomeDate}>
-                    {filtered.length} {filtered.length === 1 ? 'room' : 'rooms'} listed
-                  </Text>
+                  <View style={styles.heroStatDivider} />
+
+                  <View style={styles.heroStatItem}>
+                    <Text style={styles.heroStatValue}>
+                      {uniqueBlockCount}
+                    </Text>
+
+                    <Text style={styles.heroStatLabel}>Blocks used</Text>
+                  </View>
+
+                  <View style={styles.heroStatDivider} />
+
+                  <View style={styles.heroStatItem}>
+                    <Text style={styles.heroStatValue}>
+                      {uniqueDepartmentCount}
+                    </Text>
+
+                    <Text style={styles.heroStatLabel}>Departments</Text>
+                  </View>
                 </View>
               </View>
 
-              {/* Quick Metrics Grid */}
-              <View style={styles.metricsGrid}>
-                {metricCards.map((item) => (
-                  <View
-                    key={item.title}
+              {/* List heading */}
+              <View style={styles.sectionHeading}>
+                <View style={styles.headingText}>
+                  <Text
+                    style={[styles.sectionTitle, { color: palette.text }]}
+                  >
+                    All Rooms
+                  </Text>
+
+                  <Text
                     style={[
-                      styles.metricCard,
-                      {
-                        backgroundColor: palette.card,
-                        borderColor: palette.border
-                      },
-                      shadows.sm
+                      styles.sectionSubtitle,
+                      { color: palette.secondary },
                     ]}
                   >
-                    <View style={styles.metricTop}>
-                      <View style={[styles.metricIcon, { backgroundColor: item.tint }]}>
-                        <Ionicons name={item.icon} size={18} color={item.color} />
-                      </View>
-                      <View style={[styles.metricDot, { backgroundColor: item.color }]} />
-                    </View>
-
-                    <Text style={[styles.metricValue, { color: palette.text }]}>
-                      {loading ? '—' : item.value}
-                    </Text>
-
-                    <Text style={[styles.metricTitle, { color: palette.text }]} numberOfLines={1}>
-                      {item.title}
-                    </Text>
-
-                    <Text style={[styles.metricSubtitle, { color: palette.secondary }]} numberOfLines={1}>
-                      {item.subtitle}
-                    </Text>
-
-                    <View style={[styles.metricAccent, { backgroundColor: item.color }]} />
-                  </View>
-                ))}
-              </View>
-
-              {/* Section Header & Search + Add Bar */}
-              <View style={styles.sectionHeadingRow}>
-                <View>
-                  <Text style={[styles.sectionTitle, { color: palette.text }]}>
-                    All registered rooms
+                    Search and manage registered rooms
                   </Text>
-                  <Text style={[styles.sectionSubtitle, { color: palette.secondary }]}>
-                    Filter by room number, building block or department
+                </View>
+
+                <View
+                  style={[
+                    styles.countBadge,
+                    { backgroundColor: palette.primaryLight },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.countBadgeText,
+                      { color: palette.primary },
+                    ]}
+                  >
+                    {filteredRooms.length}
                   </Text>
                 </View>
               </View>
 
-              <View style={styles.actionToolbar}>
-                <View style={styles.searchWrapper}>
+              {/* Search and Add */}
+              <View style={styles.searchRow}>
+                <View style={styles.searchContainer}>
                   <SearchBar
                     value={search}
                     onChangeText={setSearch}
@@ -361,133 +639,49 @@ const RoomMasterScreen = ({ navigation }) => {
                   />
                 </View>
 
-                <PressableScale
+                <TouchableOpacity
+                  style={[
+                    styles.addButton,
+                    { backgroundColor: palette.primary },
+                  ]}
                   onPress={openAddModal}
-                  style={styles.addButton}
-                  accessibilityLabel="Add Room"
+                  activeOpacity={0.82}
                 >
-                  <Ionicons name="add" size={19} color="#FFFFFF" style={{ marginRight: 4 }} />
-                  <Text style={styles.addButtonText}>Add Room</Text>
-                </PressableScale>
+                  <Ionicons name="add" size={22} color="#FFFFFF" />
+                  <Text style={styles.addButtonText}>Add</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.resultRow}>
+                <View style={styles.resultLeft}>
+                  <View
+                    style={[
+                      styles.resultDot,
+                      { backgroundColor: palette.primary },
+                    ]}
+                  />
+
+                  <Text
+                    style={[styles.resultText, { color: palette.secondary }]}
+                  >
+                    {search
+                      ? `${filteredRooms.length} matching room${filteredRooms.length === 1 ? '' : 's'}`
+                      : 'Registered campus rooms'}
+                  </Text>
+                </View>
+
+                {!!search && (
+                  <Pressable onPress={() => setSearch('')}>
+                    <Text
+                      style={[styles.clearText, { color: palette.primary }]}
+                    >
+                      Clear search
+                    </Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           }
-          renderItem={({ item }) => {
-            const blockName = item.blockId?.name || 'Unassigned Block';
-            const deptName = item.departmentId?.name;
-            const progName = item.programmeId?.name;
-
-            return (
-              <View
-                style={[
-                  styles.card,
-                  {
-                    backgroundColor: palette.card,
-                    borderColor: palette.border
-                  },
-                  shadows.sm
-                ]}
-              >
-                {/* Visual Left Accent Strip */}
-                <View style={[styles.cardAccentStrip, { backgroundColor: palette.primary }]} />
-
-                <View style={styles.cardHeader}>
-                  <View style={[styles.roomIconWrapper, { backgroundColor: 'rgba(124,92,255,0.12)' }]}>
-                    <Ionicons name="business-outline" size={20} color={palette.primary} />
-                  </View>
-
-                  <View style={styles.cardMainInfo}>
-                    <View style={styles.roomTitleRow}>
-                      <Text style={[styles.roomTitle, { color: palette.text }]}>
-                        Room {item.roomNumber}
-                      </Text>
-                      <View style={[styles.statusBadge, { backgroundColor: 'rgba(34,197,94,0.12)' }]}>
-                        <View style={[styles.activeDot, { backgroundColor: palette.success }]} />
-                        <Text style={[styles.statusBadgeText, { color: palette.success }]}>
-                          Available
-                        </Text>
-                      </View>
-                    </View>
-
-                    <Text style={[styles.roomSub, { color: palette.secondary }]}>
-                      Identifier #{item._id?.slice(-6).toUpperCase() || 'SPACE'}
-                    </Text>
-                  </View>
-
-                  {/* Action buttons (Edit & Delete) */}
-                  <View style={styles.cardActions}>
-                    <PressableScale
-                      onPress={() => openEditModal(item)}
-                      style={[styles.actionBtn, { backgroundColor: 'rgba(124,92,255,0.12)' }]}
-                      accessibilityLabel="Edit Room"
-                    >
-                      <Ionicons name="pencil-outline" size={16} color={palette.primary} />
-                    </PressableScale>
-
-                    <PressableScale
-                      onPress={() => setDeleteTarget(item)}
-                      style={[styles.actionBtn, { backgroundColor: 'rgba(239,68,68,0.12)' }]}
-                      accessibilityLabel="Delete Room"
-                    >
-                      <Ionicons name="trash-outline" size={16} color={palette.danger} />
-                    </PressableScale>
-                  </View>
-                </View>
-
-                {/* Metadata Pills */}
-                <View style={styles.pillRow}>
-                  <View
-                    style={[
-                      styles.metaPill,
-                      {
-                        backgroundColor: isDark ? '#1C2438' : '#F1F5F9',
-                        borderColor: palette.border
-                      }
-                    ]}
-                  >
-                    <Ionicons name="cube-outline" size={13} color={palette.warning} style={{ marginRight: 5 }} />
-                    <Text style={[styles.metaPillText, { color: palette.text }]}>
-                      {blockName}
-                    </Text>
-                  </View>
-
-                  {deptName ? (
-                    <View
-                      style={[
-                        styles.metaPill,
-                        {
-                          backgroundColor: isDark ? '#1C2438' : '#F1F5F9',
-                          borderColor: palette.border
-                        }
-                      ]}
-                    >
-                      <Ionicons name="school-outline" size={13} color={palette.accent} style={{ marginRight: 5 }} />
-                      <Text style={[styles.metaPillText, { color: palette.secondary }]} numberOfLines={1}>
-                        {deptName}
-                      </Text>
-                    </View>
-                  ) : null}
-
-                  {progName ? (
-                    <View
-                      style={[
-                        styles.metaPill,
-                        {
-                          backgroundColor: isDark ? '#1C2438' : '#F1F5F9',
-                          borderColor: palette.border
-                        }
-                      ]}
-                    >
-                      <Ionicons name="book-outline" size={13} color={palette.primary} style={{ marginRight: 5 }} />
-                      <Text style={[styles.metaPillText, { color: palette.secondary }]} numberOfLines={1}>
-                        {progName}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-            );
-          }}
           ListEmptyComponent={
             loading ? (
               <View style={styles.skeletonContainer}>
@@ -501,520 +695,813 @@ const RoomMasterScreen = ({ navigation }) => {
                   styles.emptyCard,
                   {
                     backgroundColor: palette.card,
-                    borderColor: palette.border
-                  }
+                    borderColor: palette.border,
+                  },
                 ]}
               >
-                <EmptyState
-                  icon="key-outline"
-                  title="No Rooms Found"
-                  message={
-                    search
-                      ? 'No room entries match your search criteria.'
-                      : 'No facility rooms registered yet. Click below to add one.'
-                  }
-                  actionLabel="+ Add New Room"
-                  onAction={openAddModal}
-                />
+                <View
+                  style={[
+                    styles.emptyIcon,
+                    { backgroundColor: palette.primaryLight },
+                  ]}
+                >
+                  <Ionicons
+                    name="key-outline"
+                    size={30}
+                    color={palette.primary}
+                  />
+                </View>
+
+                <Text
+                  style={[styles.emptyTitle, { color: palette.text }]}
+                >
+                  {search ? 'No matching rooms' : 'No rooms yet'}
+                </Text>
+
+                <Text
+                  style={[
+                    styles.emptyDescription,
+                    { color: palette.secondary },
+                  ]}
+                >
+                  {search
+                    ? 'Try another room number, block or department.'
+                    : 'Add your first room to organise campus facilities.'}
+                </Text>
+
+                <TouchableOpacity
+                  onPress={search ? () => setSearch('') : openAddModal}
+                  style={[
+                    styles.emptyAction,
+                    { backgroundColor: palette.primary },
+                  ]}
+                >
+                  <Ionicons
+                    name={search ? 'search-outline' : 'add'}
+                    size={18}
+                    color="#FFFFFF"
+                  />
+
+                  <Text style={styles.emptyActionText}>
+                    {search ? 'Clear Search' : 'Add Room'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             )
           }
         />
 
-        {/* Add / Edit Sheet Modal */}
-        <Modal visible={modalVisible} animationType="slide" transparent>
+        {/* Add / Edit Room Modal */}
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={closeModal}
+          statusBarTranslucent
+        >
           <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             style={styles.modalOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
+            <Pressable
+              style={styles.modalBackdrop}
+              onPress={closeModal}
+            />
+
             <View
               style={[
                 styles.modalContent,
-                { backgroundColor: palette.card, borderColor: palette.border }
+                { backgroundColor: palette.surface },
               ]}
             >
-              <View style={[styles.modalGrabBar, { backgroundColor: palette.border }]} />
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.modalScrollContent}
+              >
+                <View style={styles.modalTopRow}>
+                  <View
+                    style={[
+                      styles.modalIcon,
+                      { backgroundColor: palette.primaryLight },
+                    ]}
+                  >
+                    <Ionicons
+                      name={editingRoom ? 'create-outline' : 'key-outline'}
+                      size={25}
+                      color={palette.primary}
+                    />
+                  </View>
 
-              <View style={styles.modalHeaderRow}>
-                <View style={[styles.modalIconBox, { backgroundColor: 'rgba(124,92,255,0.14)' }]}>
+                  <TouchableOpacity
+                    onPress={closeModal}
+                    disabled={saving}
+                    style={[
+                      styles.closeButton,
+                      { backgroundColor: palette.background },
+                    ]}
+                  >
+                    <Ionicons
+                      name="close"
+                      size={21}
+                      color={palette.secondary}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                <Text
+                  style={[styles.modalTitle, { color: palette.text }]}
+                >
+                  {editingRoom ? 'Edit Room' : 'Add New Room'}
+                </Text>
+
+                <Text
+                  style={[
+                    styles.modalSubtitle,
+                    { color: palette.secondary },
+                  ]}
+                >
+                  Enter the room number and choose its campus block.
+                </Text>
+
+                <Text style={[styles.label, { color: palette.text }]}>
+                  Room Number <Text style={styles.required}>*</Text>
+                </Text>
+
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    {
+                      backgroundColor: palette.background,
+                      borderColor: palette.border,
+                    },
+                  ]}
+                >
                   <Ionicons
-                    name={editingRoom ? 'pencil-outline' : 'add-circle-outline'}
-                    size={22}
-                    color={palette.primary}
+                    name="key-outline"
+                    size={19}
+                    color={palette.muted}
+                  />
+
+                  <TextInput
+                    style={[styles.input, { color: palette.text }]}
+                    placeholder="e.g. 101, Lab-02"
+                    placeholderTextColor={palette.muted}
+                    value={roomNumber}
+                    onChangeText={setRoomNumber}
+                    editable={!saving}
+                    autoCapitalize="characters"
+                    maxLength={30}
+                    returnKeyType="done"
                   />
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.modalTitle, { color: palette.text }]}>
-                    {editingRoom ? 'Edit Room' : 'Add New Room'}
-                  </Text>
-                  <Text style={[styles.modalSub, { color: palette.secondary }]}>
-                    Assign room identifier and map to campus infrastructure
+
+                <Text style={[styles.label, { color: palette.text }]}>
+                  Department
+                  <Text style={styles.optional}> (Optional)</Text>
+                </Text>
+
+                <CustomPicker
+                  label="Department"
+                  placeholder="Select Department"
+                  items={departmentOptions}
+                  selectedValue={departmentId}
+                  onValueChange={(value) => {
+                    setDepartmentId(value);
+                    setProgrammeId('');
+                    setBlockId('');
+                  }}
+                  disabled={saving}
+                />
+
+                <Text style={[styles.label, { color: palette.text }]}>
+                  Programme
+                  <Text style={styles.optional}> (Optional)</Text>
+                </Text>
+
+                <CustomPicker
+                  label="Programme"
+                  placeholder={
+                    departmentId
+                      ? 'Select Programme'
+                      : 'Select Programme'
+                  }
+                  items={programmeOptions}
+                  selectedValue={programmeId}
+                  onValueChange={(value) => {
+                    setProgrammeId(value);
+                    setBlockId('');
+                  }}
+                  disabled={saving}
+                />
+
+                <Text style={[styles.label, { color: palette.text }]}>
+                  Campus Block <Text style={styles.required}>*</Text>
+                </Text>
+
+                <CustomPicker
+                  label="Block"
+                  placeholder="Select Campus Block"
+                  items={blockOptions}
+                  selectedValue={blockId}
+                  onValueChange={setBlockId}
+                  disabled={saving}
+                />
+
+                <View
+                  style={[
+                    styles.hintBox,
+                    { backgroundColor: palette.primaryLight },
+                  ]}
+                >
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={18}
+                    color={palette.primary}
+                  />
+
+                  <Text style={[styles.hintText, { color: palette.primary }]}>
+                    Room number and block are required. Department and
+                    programme selections help organise campus rooms.
                   </Text>
                 </View>
-              </View>
 
-              <Text style={[styles.label, { color: palette.text }]}>
-                Room Number / Identifier *
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: isDark ? '#101626' : '#F8FAFC',
-                    borderColor: palette.border,
-                    color: palette.text
-                  }
-                ]}
-                placeholder="e.g. 101, Lab 3, Auditorium A"
-                placeholderTextColor={palette.muted}
-                value={roomNumber}
-                onChangeText={setRoomNumber}
-              />
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    onPress={closeModal}
+                    disabled={saving}
+                    style={[
+                      styles.cancelButton,
+                      { borderColor: palette.border },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.cancelButtonText,
+                        { color: palette.text },
+                      ]}
+                    >
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
 
-              <CustomPicker
-                label="Campus Block *"
-                placeholder="Select Campus Block"
-                items={(departmentId ? filteredBlocks : blocks).map((b) => ({
-                  label: b.name,
-                  value: b._id
-                }))}
-                selectedValue={blockId}
-                onValueChange={setBlockId}
-              />
+                  <TouchableOpacity
+                    onPress={handleSave}
+                    disabled={saving}
+                    style={[
+                      styles.saveButton,
+                      { backgroundColor: palette.primary },
+                      saving && { opacity: 0.6 },
+                    ]}
+                  >
+                    <Ionicons
+                      name="checkmark-circle-outline"
+                      size={18}
+                      color="#FFFFFF"
+                    />
 
-              <CustomPicker
-                label="Department (Optional)"
-                placeholder="Select Department"
-                items={departments.map((d) => ({
-                  label: `${d.name} (${d.shortName})`,
-                  value: d._id
-                }))}
-                selectedValue={departmentId}
-                onValueChange={(val) => {
-                  setDepartmentId(val);
-                  setProgrammeId('');
-                }}
-              />
-
-              <View style={styles.modalBtnRow}>
-                <Button
-                  title="Cancel"
-                  variant="outline"
-                  onPress={() => setModalVisible(false)}
-                  style={{ flex: 1 }}
-                />
-                <Button
-                  title={editingRoom ? 'Update Room' : 'Save Room'}
-                  variant="primary"
-                  onPress={handleSave}
-                  loading={saving}
-                  style={{ flex: 1 }}
-                />
-              </View>
+                    <Text style={styles.saveButtonText}>
+                      {saving
+                        ? 'Saving...'
+                        : editingRoom
+                          ? 'Save Changes'
+                          : 'Create Room'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
             </View>
           </KeyboardAvoidingView>
         </Modal>
-
-        {/* Delete Confirmation */}
-        <ConfirmDialog
-          visible={!!deleteTarget}
-          title="Delete Room"
-          message={`Are you sure you want to delete room "${deleteTarget?.roomNumber}"? This cannot be undone.`}
-          confirmText="Delete Room"
-          onConfirm={confirmDelete}
-          onCancel={() => setDeleteTarget(null)}
-          confirmVariant="danger"
-        />
-      </Animated.View>
+      </View>
     </ResponsiveContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
+
   listContent: {
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 48
+    paddingTop: 14,
+    paddingBottom: 35,
+    flexGrow: 1,
   },
 
-  // Dashboard-matching Welcome Banner
-  welcomeCard: {
-    borderRadius: 24,
-    padding: 20,
-    marginBottom: 16,
+  heroCard: {
     backgroundColor: PURPLE,
+    borderRadius: 25,
+    padding: 20,
+    marginBottom: 26,
     overflow: 'hidden',
-    position: 'relative'
   },
-  welcomeGlowOne: {
+
+  heroCircleOne: {
     position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    top: -70,
-    right: -40
+    width: 190,
+    height: 190,
+    borderRadius: 95,
+    top: -115,
+    right: -55,
+    backgroundColor: 'rgba(255,255,255,0.10)',
   },
-  welcomeGlowTwo: {
+
+  heroCircleTwo: {
     position: 'absolute',
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(39,20,119,0.18)',
-    bottom: -90,
-    right: 65
+    width: 145,
+    height: 145,
+    borderRadius: 73,
+    bottom: -95,
+    left: 75,
+    backgroundColor: 'rgba(30,15,95,0.18)',
   },
-  welcomeContent: {
-    paddingRight: 52
-  },
-  welcomeEyebrow: {
+
+  heroTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
-  liveDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#A7F3D0',
-    marginRight: 7
-  },
-  welcomeEyebrowText: {
-    color: 'rgba(255,255,255,0.78)',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1.4
-  },
-  welcomeTitle: {
-    color: '#FFFFFF',
-    fontSize: 23,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-    lineHeight: 29
-  },
-  welcomeSubtitle: {
-    color: 'rgba(255,255,255,0.82)',
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 6,
-    maxWidth: 270
-  },
-  welcomeIcon: {
-    position: 'absolute',
-    right: 20,
-    top: 22,
-    width: 48,
-    height: 48,
+
+  heroIcon: {
+    width: 51,
+    height: 51,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.22)'
+    borderColor: 'rgba(255,255,255,0.2)',
   },
-  welcomeBottomRow: {
+
+  heroBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 16
-  },
-  welcomeStatusPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.16)',
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.15)'
+    paddingHorizontal: 11,
+    paddingVertical: 8,
   },
-  welcomeStatusText: {
+
+  heroBadgeText: {
     color: '#FFFFFF',
-    fontSize: 10.5,
-    fontWeight: '700',
-    marginLeft: 5
-  },
-  welcomeDate: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 11,
-    fontWeight: '600'
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.8,
   },
 
-  // 3-Card Metrics Row
-  metricsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 21,
+    fontWeight: '900',
+    letterSpacing: -0.4,
+  },
+
+  heroDescription: {
+    color: '#E8E2FF',
+    fontSize: 11.5,
+    lineHeight: 18,
+    marginTop: 8,
+  },
+
+  heroDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginTop: 20,
     marginBottom: 16,
-    gap: 8
-  },
-  metricCard: {
-    flex: 1,
-    minHeight: 110,
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 11,
-    overflow: 'hidden',
-    position: 'relative'
-  },
-  metricTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 6
-  },
-  metricIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  metricDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3
-  },
-  metricValue: {
-    fontSize: 22,
-    lineHeight: 26,
-    fontWeight: '800',
-    letterSpacing: -0.5
-  },
-  metricTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    marginTop: 2
-  },
-  metricSubtitle: {
-    fontSize: 9.5,
-    marginTop: 1
-  },
-  metricAccent: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2.5
   },
 
-  // Section Headers
-  sectionHeadingRow: {
+  heroStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  heroStatItem: {
+    flex: 1,
+  },
+
+  heroStatValue: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: '900',
+  },
+
+  heroStatLabel: {
+    color: '#E8E2FF',
+    fontSize: 9,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+
+  heroStatDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    marginHorizontal: 13,
+  },
+
+  sectionHeading: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10
+    marginBottom: 14,
   },
+
+  headingText: {
+    flex: 1,
+  },
+
   sectionTitle: {
     fontSize: 17,
-    fontWeight: '800',
-    letterSpacing: -0.3
-  },
-  sectionSubtitle: {
-    fontSize: 11.5,
-    marginTop: 2
+    fontWeight: '900',
+    letterSpacing: -0.3,
   },
 
-  // Action Toolbar (Search + Add Button)
-  actionToolbar: {
+  sectionSubtitle: {
+    fontSize: 11,
+    marginTop: 5,
+    lineHeight: 16,
+  },
+
+  countBadge: {
+    minWidth: 38,
+    height: 34,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+
+  countBadgeText: {
+    fontSize: 13,
+    fontWeight: '900',
+  },
+
+  searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 14
-  },
-  searchWrapper: {
-    flex: 1
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: PURPLE,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 12,
-    shadowColor: PURPLE,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 3
-  },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 13
+    marginBottom: 12,
   },
 
-  // Room Card
-  card: {
-    borderRadius: 18,
-    borderWidth: 1,
-    padding: 15,
-    marginBottom: 11,
-    position: 'relative',
-    overflow: 'hidden'
+  searchContainer: {
+    flex: 1,
   },
-  cardAccentStrip: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 4
-  },
-  cardHeader: {
+
+  addButton: {
+    minHeight: 45,
+    paddingHorizontal: 13,
+    borderRadius: 13,
     flexDirection: 'row',
-    alignItems: 'center'
-  },
-  roomIconWrapper: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12
-  },
-  cardMainInfo: {
-    flex: 1
-  },
-  roomTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8
-  },
-  roomTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: -0.3
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: 12,
-    gap: 4
-  },
-  activeDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5
-  },
-  statusBadgeText: {
-    fontSize: 10,
-    fontWeight: '700'
-  },
-  roomSub: {
-    fontSize: 11,
-    marginTop: 2
-  },
-  cardActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8
-  },
-  actionBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
+    gap: 4,
   },
 
-  // Pill Metadata Row
-  pillRow: {
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+
+  resultRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 13,
+  },
+
+  resultLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
     gap: 7,
-    marginTop: 12,
-    paddingLeft: 2
-  },
-  metaPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 9,
-    paddingVertical: 4.5,
-    borderRadius: 8,
-    borderWidth: 1
-  },
-  metaPillText: {
-    fontSize: 11.5,
-    fontWeight: '600'
   },
 
-  // Empty & Skeleton Containers
+  resultDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+  },
+
+  resultText: {
+    fontSize: 10.5,
+    fontWeight: '600',
+  },
+
+  clearText: {
+    fontSize: 11,
+    fontWeight: '800',
+    marginLeft: 8,
+  },
+
+  roomCard: {
+    borderWidth: 1,
+    borderRadius: 19,
+    padding: 14,
+    marginBottom: 12,
+  },
+
+  cardMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  roomIcon: {
+    width: 49,
+    height: 49,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+
+  roomInfo: {
+    flex: 1,
+    paddingRight: 5,
+  },
+
+  roomName: {
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 20,
+  },
+
+  roomBadge: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 7,
+  },
+
+  roomBadgeText: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginLeft: 4,
+  },
+
+  actionButton: {
+    width: 35,
+    height: 35,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  cardDivider: {
+    height: 1,
+    marginTop: 14,
+    marginBottom: 12,
+  },
+
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  metaSpacing: {
+    marginTop: 8,
+  },
+
+  metaText: {
+    flex: 1,
+    fontSize: 11,
+    fontWeight: '600',
+  },
+
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    marginTop: 13,
+    paddingTop: 11,
+  },
+
+  footerMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+  },
+
+  footerText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+
+  indexText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+
   skeletonContainer: {
     gap: 12,
-    marginTop: 8
-  },
-  emptyCard: {
-    borderRadius: 18,
-    borderWidth: 1,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    marginTop: 6
+    paddingTop: 4,
   },
 
-  // Bottom Sheet Modal
+  emptyCard: {
+    alignItems: 'center',
+    padding: 25,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginTop: 5,
+  },
+
+  emptyIcon: {
+    width: 65,
+    height: 65,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+
+  emptyDescription: {
+    fontSize: 11,
+    lineHeight: 18,
+    textAlign: 'center',
+    marginTop: 7,
+    maxWidth: 270,
+  },
+
+  emptyAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 15,
+    paddingVertical: 11,
+    borderRadius: 12,
+    marginTop: 18,
+  },
+
+  emptyActionText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '900',
+  },
+
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(5, 8, 18, 0.65)',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
+
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(3,6,18,0.65)',
+  },
+
   modalContent: {
-    borderTopLeftRadius: 26,
-    borderTopRightRadius: 26,
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    padding: 22,
-    paddingBottom: Platform.OS === 'ios' ? 36 : 24
+    borderTopLeftRadius: 27,
+    borderTopRightRadius: 27,
+    maxHeight: '88%',
+    paddingTop: 22,
   },
-  modalGrabBar: {
-    width: 38,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 16
+
+  modalScrollContent: {
+    paddingHorizontal: 22,
+    paddingBottom: 30,
   },
-  modalHeaderRow: {
+
+  modalTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 16
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
-  modalIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+
+  modalIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 16,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    letterSpacing: -0.3
-  },
-  modalSub: {
-    fontSize: 12,
-    marginTop: 2
-  },
-  label: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    marginBottom: 6,
-    marginTop: 10
-  },
-  input: {
-    borderWidth: 1,
+
+  closeButton: {
+    width: 36,
+    height: 36,
     borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 14
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  modalBtnRow: {
+
+  modalTitle: {
+    fontSize: 21,
+    fontWeight: '900',
+    letterSpacing: -0.4,
+  },
+
+  modalSubtitle: {
+    fontSize: 11,
+    lineHeight: 18,
+    marginTop: 7,
+    marginBottom: 20,
+  },
+
+  label: {
+    fontSize: 11,
+    fontWeight: '800',
+    marginBottom: 8,
+    marginTop: 14,
+  },
+
+  required: {
+    color: '#EF4444',
+  },
+
+  optional: {
+    fontSize: 10,
+    fontWeight: '500',
+  },
+
+  inputWrapper: {
+    minHeight: 51,
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 22
-  }
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 13,
+    paddingHorizontal: 13,
+    gap: 10,
+  },
+
+  input: {
+    flex: 1,
+    fontSize: 13,
+    paddingVertical: 12,
+  },
+
+  hintBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 12,
+    borderRadius: 12,
+    gap: 8,
+    marginTop: 16,
+  },
+
+  hintText: {
+    flex: 1,
+    fontSize: 10,
+    lineHeight: 16,
+    fontWeight: '600',
+  },
+
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 24,
+  },
+
+  cancelButton: {
+    minHeight: 48,
+    paddingHorizontal: 15,
+    borderRadius: 13,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  cancelButtonText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+
+  saveButton: {
+    flex: 1,
+    minHeight: 48,
+    paddingHorizontal: 12,
+    borderRadius: 13,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+  },
+
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '900',
+  },
 });
 
 export default RoomMasterScreen;
