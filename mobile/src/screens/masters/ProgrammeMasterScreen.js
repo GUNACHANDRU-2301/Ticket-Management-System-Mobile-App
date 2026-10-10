@@ -1,370 +1,827 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   FlatList,
   TextInput,
   TouchableOpacity,
+  Pressable,
   Modal,
   StyleSheet,
   Alert,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  RefreshControl,
+  StatusBar,
+  ScrollView,
 } from 'react-native';
+
 import { DrawerActions } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+
 import { programmeApi, departmentApi } from '../../api/masters';
 import { useTheme } from '../../context/ThemeContext';
 import ResponsiveContainer from '../../components/ResponsiveContainer';
 import AppHeader from '../../components/AppHeader';
 import CustomPicker from '../../components/CustomPicker';
 import SearchBar from '../../components/SearchBar';
-import Button from '../../components/Button';
-import EmptyState from '../../components/EmptyState';
-import ConfirmDialog from '../../components/ConfirmDialog';
 import { CardSkeleton } from '../../components/LoadingSkeleton';
+
+const PURPLE = '#7C5CFF';
+
+const getRelationId = (value) => {
+  if (value && typeof value === 'object') {
+    return value._id || value.id || '';
+  }
+
+  return value || '';
+};
+
+const getDepartmentName = (programme) => {
+  const department = programme?.departmentId;
+
+  if (department && typeof department === 'object') {
+    return department.name || department.departmentName || 'Department';
+  }
+
+  return 'Department';
+};
 
 const ProgrammeMasterScreen = ({ navigation }) => {
   const { theme, isDark } = useTheme();
+  const colors = theme?.colors || {};
+
+  const palette = {
+    background: colors.background || (isDark ? '#0B1020' : '#F5F6FC'),
+    surface: colors.surface || (isDark ? '#151B2D' : '#FFFFFF'),
+    card: colors.card || colors.surface || '#FFFFFF',
+    text: colors.text || (isDark ? '#F5F7FF' : '#171936'),
+    secondary: colors.textSecondary || (isDark ? '#A4ADC4' : '#737B93'),
+    muted: colors.textMuted || (isDark ? '#8A93AA' : '#8A91A7'),
+    border: colors.border || (isDark ? '#293149' : '#E8EAF4'),
+    primary: colors.primary || PURPLE,
+    primaryLight: colors.primaryLight || (isDark ? '#292344' : '#EEE8FF'),
+    danger: colors.danger || '#EF4444',
+    dangerLight: colors.dangerLight || (isDark ? '#3B202B' : '#FEECEE'),
+  };
 
   const [programmes, setProgrammes] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [search, setSearch] = useState('');
+
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingProg, setEditingProg] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [editingProgramme, setEditingProgramme] = useState(null);
 
   const [departmentId, setDepartmentId] = useState('');
   const [name, setName] = useState('');
   const [shortName, setShortName] = useState('');
-  const [saving, setSaving] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
     try {
-      const [progList, deptList] = await Promise.all([
+      const [programmeList, departmentList] = await Promise.all([
         programmeApi.getAll(),
-        departmentApi.getAll()
+        departmentApi.getAll(),
       ]);
-      setProgrammes(progList || []);
-      setDepartments(deptList || []);
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', 'Failed to load programmes.');
+
+      setProgrammes(Array.isArray(programmeList) ? programmeList : []);
+      setDepartments(Array.isArray(departmentList) ? departmentList : []);
+    } catch (error) {
+      console.error('Error fetching programme data:', error);
+
+      Alert.alert(
+        'Unable to Load',
+        'Failed to load programmes. Please try again.'
+      );
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const openAddModal = () => {
-    setEditingProg(null);
+    setEditingProgramme(null);
     setDepartmentId(departments[0]?._id || '');
     setName('');
     setShortName('');
     setModalVisible(true);
   };
 
-  const openEditModal = (prog) => {
-    setEditingProg(prog);
-    setDepartmentId(prog.departmentId?._id || prog.departmentId || '');
-    setName(prog.name);
-    setShortName(prog.shortName);
+  const openEditModal = (programme) => {
+    setEditingProgramme(programme);
+    setDepartmentId(getRelationId(programme.departmentId));
+    setName(programme.name || '');
+    setShortName(programme.shortName || '');
     setModalVisible(true);
   };
 
+  const closeModal = () => {
+    if (saving) return;
+
+    setModalVisible(false);
+    setEditingProgramme(null);
+  };
+
   const handleSave = async () => {
-    if (!name.trim() || !shortName.trim() || !departmentId) {
-      Alert.alert('Validation Error', 'Department, programme name, and code are required.');
+    const cleanName = name.trim();
+    const cleanShortName = shortName.trim().toUpperCase();
+
+    if (!departmentId || !cleanName || !cleanShortName) {
+      Alert.alert(
+        'Required Fields',
+        'Please select a department and enter the programme name and short code.'
+      );
       return;
     }
 
+    if (saving) return;
+
     setSaving(true);
+
     try {
-      if (editingProg) {
-        await programmeApi.update(editingProg._id, {
-          departmentId,
-          name: name.trim(),
-          shortName: shortName.trim().toUpperCase()
-        });
-        Alert.alert('Success ✅', 'Programme updated successfully.');
+      const payload = {
+        departmentId,
+        name: cleanName,
+        shortName: cleanShortName,
+      };
+
+      if (editingProgramme) {
+        await programmeApi.update(editingProgramme._id, payload);
+
+        Alert.alert(
+          'Updated Successfully',
+          'Programme details have been updated.'
+        );
       } else {
-        await programmeApi.create({
-          departmentId,
-          name: name.trim(),
-          shortName: shortName.trim().toUpperCase()
-        });
-        Alert.alert('Success 🎉', 'New programme created.');
+        await programmeApi.create(payload);
+
+        Alert.alert(
+          'Created Successfully',
+          'New programme has been added.'
+        );
       }
+
       setModalVisible(false);
-      fetchData();
-    } catch (err) {
-      Alert.alert('Error', err.response?.data?.message || 'Failed to save programme.');
+      setEditingProgramme(null);
+
+      await fetchData();
+    } catch (error) {
+      Alert.alert(
+        'Save Failed',
+        error.response?.data?.message ||
+          'Unable to save programme. Please try again.'
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  const confirmDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      await programmeApi.delete(deleteTarget._id);
-      fetchData();
-    } catch (err) {
-      Alert.alert('Error', err.response?.data?.message || 'Failed to delete.');
-    } finally {
-      setDeleteTarget(null);
-    }
+  const confirmDelete = (programme) => {
+    Alert.alert(
+      'Delete Programme',
+      `Are you sure you want to delete "${programme.name}"?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await programmeApi.delete(programme._id);
+              await fetchData();
+
+              Alert.alert(
+                'Deleted',
+                'Programme has been deleted successfully.'
+              );
+            } catch (error) {
+              Alert.alert(
+                'Delete Failed',
+                error.response?.data?.message ||
+                  'Unable to delete this programme.'
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
-  const filtered = programmes.filter(
-    (p) =>
-      p.name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.shortName?.toLowerCase().includes(search.toLowerCase()) ||
-      p.departmentId?.name?.toLowerCase().includes(search.toLowerCase())
+  const filtered = programmes.filter((programme) => {
+    const query = search.trim().toLowerCase();
+
+    return (
+      (programme.name || '').toLowerCase().includes(query) ||
+      (programme.shortName || '').toLowerCase().includes(query) ||
+      getDepartmentName(programme).toLowerCase().includes(query)
+    );
+  });
+
+  const departmentOptions = departments.map((department) => ({
+    label: department.name || department.departmentName || 'Department',
+    value: department._id,
+  }));
+
+  const renderProgramme = ({ item, index }) => (
+    <View
+      style={[
+        styles.programmeCard,
+        {
+          backgroundColor: palette.card,
+          borderColor: palette.border,
+        },
+      ]}
+    >
+      <View style={styles.cardMain}>
+        <View
+          style={[
+            styles.programmeIcon,
+            { backgroundColor: palette.primaryLight },
+          ]}
+        >
+          <Ionicons
+            name="school-outline"
+            size={25}
+            color={palette.primary}
+          />
+        </View>
+
+        <View style={styles.programmeInfo}>
+          <Text
+            style={[styles.programmeName, { color: palette.text }]}
+            numberOfLines={2}
+          >
+            {item.name || 'Unnamed Programme'}
+          </Text>
+
+          <View
+            style={[
+              styles.codeBadge,
+              {
+                backgroundColor: isDark ? '#202840' : '#F4F1FF',
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <Ionicons
+              name="pricetag-outline"
+              size={12}
+              color={palette.primary}
+            />
+
+            <Text style={[styles.codeText, { color: palette.primary }]}>
+              {item.shortName || 'NO CODE'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.actions}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={`Edit ${item.name}`}
+            style={[
+              styles.actionButton,
+              { backgroundColor: palette.primaryLight },
+            ]}
+            onPress={() => openEditModal(item)}
+            activeOpacity={0.75}
+          >
+            <Ionicons
+              name="create-outline"
+              size={19}
+              color={palette.primary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={`Delete ${item.name}`}
+            style={[
+              styles.actionButton,
+              { backgroundColor: palette.dangerLight },
+            ]}
+            onPress={() => confirmDelete(item)}
+            activeOpacity={0.75}
+          >
+            <Ionicons
+              name="trash-outline"
+              size={18}
+              color={palette.danger}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={[styles.cardDivider, { backgroundColor: palette.border }]} />
+
+      <View style={styles.cardFooter}>
+        <View style={styles.footerMeta}>
+          <Ionicons
+            name="business-outline"
+            size={14}
+            color={palette.muted}
+          />
+
+          <Text
+            style={[styles.footerMetaText, { color: palette.secondary }]}
+            numberOfLines={1}
+          >
+            {getDepartmentName(item)}
+          </Text>
+        </View>
+
+        <Text style={[styles.indexText, { color: palette.muted }]}>
+          #{String(index + 1).padStart(2, '0')}
+        </Text>
+      </View>
+    </View>
   );
 
   return (
     <ResponsiveContainer>
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={palette.background}
+      />
+
+      <View style={[styles.container, { backgroundColor: palette.background }]}>
         <AppHeader
           title="Programmes"
-          subtitle="Degree specializations & courses"
-          showBack={navigation?.canGoBack?.()}
-          onBackPress={() => navigation.goBack()}
-          onMenuPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          subtitle="Degree specialisations & courses"
+          onMenuPress={() =>
+            navigation.dispatch(DrawerActions.openDrawer())
+          }
           showNotification={false}
           showProfile={false}
         />
-        {/* Search & Top Action Bar */}
-        <View
-          style={[
-            styles.topBar,
-            {
-              backgroundColor: theme.colors.surface,
-              borderBottomColor: theme.colors.border
-            }
-          ]}
-        >
-          <View style={styles.searchWrapper}>
-            <SearchBar
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Search programmes or dept..."
+
+        <FlatList
+          data={loading ? [] : filtered}
+          keyExtractor={(item) => String(item._id)}
+          renderItem={renderProgramme}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => fetchData(true)}
+              tintColor={palette.primary}
+              colors={[palette.primary]}
             />
-          </View>
-          <Button
-            title="+ Add"
-            size="sm"
-            onPress={openAddModal}
-            variant="primary"
-          />
-        </View>
+          }
+          ListHeaderComponent={
+            <View>
+              <View style={styles.heroCard}>
+                <View style={styles.heroCircleOne} />
+                <View style={styles.heroCircleTwo} />
 
-        <View style={styles.counterRow}>
-          <Text style={[styles.counterText, { color: theme.colors.textMuted }]}>
-            Total <Text style={[styles.bold, { color: theme.colors.text }]}>{filtered.length}</Text> academic programmes
-          </Text>
-        </View>
-
-        {loading ? (
-          <View style={styles.skeletonContainer}>
-            <CardSkeleton />
-            <CardSkeleton />
-            <CardSkeleton />
-          </View>
-        ) : (
-          <FlatList
-            data={filtered}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => {
-              const deptName = item.departmentId?.name || 'Unassigned Dept';
-              return (
-                <View
-                  style={[
-                    styles.card,
-                    {
-                      backgroundColor: theme.colors.surface,
-                      borderColor: theme.colors.border
-                    },
-                    theme.shadows.sm
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.iconCircle,
-                      { backgroundColor: theme.colors.primaryLight }
-                    ]}
-                  >
-                    <Text style={styles.iconText}>🎓</Text>
+                <View style={styles.heroTopRow}>
+                  <View style={styles.heroIcon}>
+                    <Ionicons
+                      name="school"
+                      size={27}
+                      color="#FFFFFF"
+                    />
                   </View>
 
-                  <View style={styles.info}>
-                    <Text style={[styles.name, { color: theme.colors.text }]}>
-                      {item.name}
-                    </Text>
-                    <View style={styles.metaRow}>
-                      <View
-                        style={[
-                          styles.codePill,
-                          {
-                            backgroundColor: isDark ? theme.colors.card : '#F1F5F9',
-                            borderColor: theme.colors.border
-                          }
-                        ]}
-                      >
-                        <Text style={[styles.codeText, { color: theme.colors.textSecondary }]}>
-                          {item.shortName}
-                        </Text>
-                      </View>
-                      <Text style={[styles.deptText, { color: theme.colors.textMuted }]}>
-                        • {deptName}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.actionRow}>
-                    <TouchableOpacity
-                      style={[styles.actionBtn, { backgroundColor: theme.colors.primaryLight }]}
-                      onPress={() => openEditModal(item)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.actionIcon}>✏️</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.actionBtn, { backgroundColor: theme.colors.dangerLight }]}
-                      onPress={() => setDeleteTarget(item)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.actionIcon}>🗑️</Text>
-                    </TouchableOpacity>
+                  <View style={styles.heroBadge}>
+                    <Ionicons
+                      name="library-outline"
+                      size={14}
+                      color="#FFFFFF"
+                    />
+                    <Text style={styles.heroBadgeText}>MASTER DATA</Text>
                   </View>
                 </View>
-              );
-            }}
-            ListEmptyComponent={
-              <EmptyState
-                icon="school-outline"
-                title="No Programmes Found"
-                message={
-                  search
-                    ? 'No programmes match your search query.'
-                    : 'Click "+ Add" to create an academic programme.'
-                }
-                actionLabel="+ Add Programme"
-                onAction={openAddModal}
-              />
-            }
-          />
-        )}
 
-        {/* Add / Edit Sheet Modal */}
-        <Modal visible={modalVisible} animationType="slide" transparent>
+                <Text style={styles.heroTitle}>Programme Management</Text>
+
+                <Text style={styles.heroDescription}>
+                  Manage academic courses, specialisations and their
+                  department associations.
+                </Text>
+
+                <View style={styles.heroDivider} />
+
+                <View style={styles.heroStats}>
+                  <View style={styles.heroStatItem}>
+                    <Text style={styles.heroStatValue}>
+                      {programmes.length}
+                    </Text>
+                    <Text style={styles.heroStatLabel}>
+                      Total programmes
+                    </Text>
+                  </View>
+
+                  <View style={styles.heroStatDivider} />
+
+                  <View style={styles.heroStatItem}>
+                    <Text style={styles.heroStatValue}>
+                      {departments.length}
+                    </Text>
+                    <Text style={styles.heroStatLabel}>
+                      Departments
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.sectionHeading}>
+                <View style={styles.headingText}>
+                  <Text style={[styles.sectionTitle, { color: palette.text }]}>
+                    All Programmes
+                  </Text>
+
+                  <Text
+                    style={[
+                      styles.sectionSubtitle,
+                      { color: palette.secondary },
+                    ]}
+                  >
+                    Search, edit or add academic programmes
+                  </Text>
+                </View>
+
+                <View
+                  style={[
+                    styles.countBadge,
+                    { backgroundColor: palette.primaryLight },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.countBadgeText,
+                      { color: palette.primary },
+                    ]}
+                  >
+                    {filtered.length}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.searchRow}>
+                <View style={styles.searchContainer}>
+                  <SearchBar
+                    value={search}
+                    onChangeText={setSearch}
+                    placeholder="Search programme or department..."
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.addButton,
+                    { backgroundColor: palette.primary },
+                  ]}
+                  onPress={openAddModal}
+                  activeOpacity={0.82}
+                >
+                  <Ionicons name="add" size={22} color="#FFFFFF" />
+                  <Text style={styles.addButtonText}>Add</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.resultRow}>
+                <View style={styles.resultLeft}>
+                  <View
+                    style={[
+                      styles.resultDot,
+                      { backgroundColor: palette.primary },
+                    ]}
+                  />
+
+                  <Text style={[styles.resultText, { color: palette.secondary }]}>
+                    {search
+                      ? `${filtered.length} matching programme${filtered.length === 1 ? '' : 's'}`
+                      : 'Registered academic programmes'}
+                  </Text>
+                </View>
+
+                {!!search && (
+                  <Pressable onPress={() => setSearch('')}>
+                    <Text style={[styles.clearText, { color: palette.primary }]}>
+                      Clear search
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          }
+          ListEmptyComponent={
+            loading ? (
+              <View style={styles.skeletonContainer}>
+                <CardSkeleton />
+                <CardSkeleton />
+                <CardSkeleton />
+              </View>
+            ) : (
+              <View
+                style={[
+                  styles.emptyCard,
+                  {
+                    backgroundColor: palette.card,
+                    borderColor: palette.border,
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.emptyIcon,
+                    { backgroundColor: palette.primaryLight },
+                  ]}
+                >
+                  <Ionicons
+                    name="school-outline"
+                    size={30}
+                    color={palette.primary}
+                  />
+                </View>
+
+                <Text style={[styles.emptyTitle, { color: palette.text }]}>
+                  {search ? 'No matching programmes' : 'No programmes yet'}
+                </Text>
+
+                <Text
+                  style={[
+                    styles.emptyDescription,
+                    { color: palette.secondary },
+                  ]}
+                >
+                  {search
+                    ? 'Try another programme name, code or department.'
+                    : 'Add your first academic programme to get started.'}
+                </Text>
+
+                <TouchableOpacity
+                  onPress={
+                    search
+                      ? () => setSearch('')
+                      : openAddModal
+                  }
+                  style={[
+                    styles.emptyAction,
+                    { backgroundColor: palette.primary },
+                  ]}
+                >
+                  <Ionicons
+                    name={search ? 'search-outline' : 'add'}
+                    size={18}
+                    color="#FFFFFF"
+                  />
+
+                  <Text style={styles.emptyActionText}>
+                    {search ? 'Clear Search' : 'Add Programme'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }
+        />
+
+        {/* Add / Edit Programme Modal */}
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={closeModal}
+          statusBarTranslucent
+        >
           <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             style={styles.modalOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
+            <Pressable
+              style={styles.modalBackdrop}
+              onPress={closeModal}
+            />
+
             <View
               style={[
                 styles.modalContent,
-                { backgroundColor: theme.colors.surface }
+                { backgroundColor: palette.surface },
               ]}
             >
-              <View
-                style={[
-                  styles.modalGrabBar,
-                  { backgroundColor: theme.colors.border }
-                ]}
-              />
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.modalScrollContent}
+              >
+                <View style={styles.modalTopRow}>
+                  <View
+                    style={[
+                      styles.modalIcon,
+                      { backgroundColor: palette.primaryLight },
+                    ]}
+                  >
+                    <Ionicons
+                      name={editingProgramme ? 'create-outline' : 'school-outline'}
+                      size={25}
+                      color={palette.primary}
+                    />
+                  </View>
 
-              <Text style={[styles.modalTitle, { color: theme.colors.text }]}>
-                {editingProg ? 'Edit Academic Programme' : 'Add New Programme'}
-              </Text>
-              <Text style={[styles.modalSub, { color: theme.colors.textMuted }]}>
-                Link to an existing faculty department
-              </Text>
+                  <TouchableOpacity
+                    onPress={closeModal}
+                    disabled={saving}
+                    style={[
+                      styles.closeButton,
+                      { backgroundColor: palette.background },
+                    ]}
+                  >
+                    <Ionicons
+                      name="close"
+                      size={21}
+                      color={palette.secondary}
+                    />
+                  </TouchableOpacity>
+                </View>
 
-              <CustomPicker
-                label="Department *"
-                placeholder="Select Department"
-                items={departments.map((d) => ({
-                  label: `${d.name} (${d.shortName})`,
-                  value: d._id
-                }))}
-                selectedValue={departmentId}
-                onValueChange={setDepartmentId}
-              />
+                <Text style={[styles.modalTitle, { color: palette.text }]}>
+                  {editingProgramme ? 'Edit Programme' : 'Add New Programme'}
+                </Text>
 
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-                Programme Name *
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: isDark ? theme.colors.card : '#F8FAFC',
-                    borderColor: theme.colors.border,
-                    color: theme.colors.text
-                  }
-                ]}
-                placeholder="e.g. B.Tech Computer Science"
-                placeholderTextColor={theme.colors.textMuted}
-                value={name}
-                onChangeText={setName}
-              />
+                <Text style={[styles.modalSubtitle, { color: palette.secondary }]}>
+                  {editingProgramme
+                    ? 'Update the programme details below.'
+                    : 'Choose a department and enter the programme details.'}
+                </Text>
 
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-                Programme Code *
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: isDark ? theme.colors.card : '#F8FAFC',
-                    borderColor: theme.colors.border,
-                    color: theme.colors.text
-                  }
-                ]}
-                placeholder="e.g. BT-CSE"
-                placeholderTextColor={theme.colors.textMuted}
-                autoCapitalize="characters"
-                value={shortName}
-                onChangeText={setShortName}
-              />
+                <Text style={[styles.label, { color: palette.text }]}>
+                  Department <Text style={styles.required}>*</Text>
+                </Text>
 
-              <View style={styles.modalBtnRow}>
-                <Button
-                  title="Cancel"
-                  variant="outline"
-                  onPress={() => setModalVisible(false)}
-                  style={{ flex: 1 }}
-                />
-                <Button
-                  title="Save Programme"
-                  variant="primary"
-                  onPress={handleSave}
-                  loading={saving}
-                  style={{ flex: 1 }}
-                />
-              </View>
+                {departments.length > 0 ? (
+                  <CustomPicker
+                    label="Department"
+                    placeholder="Select Department"
+                    items={departmentOptions}
+                    selectedValue={departmentId}
+                    onValueChange={setDepartmentId}
+                    disabled={saving}
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.warningBox,
+                      { backgroundColor: palette.dangerLight },
+                    ]}
+                  >
+                    <Ionicons
+                      name="alert-circle-outline"
+                      size={18}
+                      color={palette.danger}
+                    />
+                    <Text style={[styles.warningText, { color: palette.danger }]}>
+                      Add a department before creating a programme.
+                    </Text>
+                  </View>
+                )}
+
+                <Text style={[styles.label, { color: palette.text }]}>
+                  Programme Name <Text style={styles.required}>*</Text>
+                </Text>
+
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    {
+                      backgroundColor: palette.background,
+                      borderColor: palette.border,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="school-outline"
+                    size={19}
+                    color={palette.muted}
+                  />
+
+                  <TextInput
+                    style={[styles.input, { color: palette.text }]}
+                    placeholder="e.g. Master of Computer Applications"
+                    placeholderTextColor={palette.muted}
+                    value={name}
+                    onChangeText={setName}
+                    editable={!saving}
+                    autoCapitalize="words"
+                    maxLength={100}
+                    returnKeyType="next"
+                  />
+                </View>
+
+                <Text style={[styles.label, { color: palette.text }]}>
+                  Programme Short Code <Text style={styles.required}>*</Text>
+                </Text>
+
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    {
+                      backgroundColor: palette.background,
+                      borderColor: palette.border,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="pricetag-outline"
+                    size={19}
+                    color={palette.muted}
+                  />
+
+                  <TextInput
+                    style={[styles.input, { color: palette.text }]}
+                    placeholder="e.g. MCA"
+                    placeholderTextColor={palette.muted}
+                    value={shortName}
+                    onChangeText={(value) =>
+                      setShortName(value.replace(/\s/g, '').toUpperCase())
+                    }
+                    editable={!saving}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                    maxLength={15}
+                    returnKeyType="done"
+                  />
+                </View>
+
+                <View
+                  style={[
+                    styles.hintBox,
+                    { backgroundColor: palette.primaryLight },
+                  ]}
+                >
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={18}
+                    color={palette.primary}
+                  />
+
+                  <Text style={[styles.hintText, { color: palette.primary }]}>
+                    Example: MCA, BCA, MBA or MSc-CS.
+                  </Text>
+                </View>
+
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    onPress={closeModal}
+                    disabled={saving}
+                    style={[
+                      styles.cancelButton,
+                      { borderColor: palette.border },
+                    ]}
+                  >
+                    <Text style={[styles.cancelButtonText, { color: palette.text }]}>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={handleSave}
+                    disabled={saving || departments.length === 0}
+                    style={[
+                      styles.saveButton,
+                      { backgroundColor: palette.primary },
+                      (saving || departments.length === 0) && { opacity: 0.6 },
+                    ]}
+                  >
+                    {saving ? (
+                      <Text style={styles.saveButtonText}>Saving...</Text>
+                    ) : (
+                      <>
+                        <Ionicons
+                          name="checkmark-circle-outline"
+                          size={18}
+                          color="#FFFFFF"
+                        />
+
+                        <Text style={styles.saveButtonText}>
+                          {editingProgramme ? 'Save Changes' : 'Create Programme'}
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
             </View>
           </KeyboardAvoidingView>
         </Modal>
-
-        {/* Delete Confirmation */}
-        <ConfirmDialog
-          visible={!!deleteTarget}
-          title="Delete Programme"
-          message={`Are you sure you want to delete "${deleteTarget?.name}"?`}
-          confirmText="Delete"
-          onConfirm={confirmDelete}
-          onCancel={() => setDeleteTarget(null)}
-          confirmVariant="danger"
-        />
       </View>
     </ResponsiveContainer>
   );
@@ -372,141 +829,526 @@ const ProgrammeMasterScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    gap: 10
-  },
-  searchWrapper: {
-    flex: 1
-  },
-  counterRow: {
-    paddingHorizontal: 16,
-    paddingVertical: 10
-  },
-  counterText: {
-    fontSize: 12.5
-  },
-  bold: {
-    fontWeight: '800'
-  },
-  skeletonContainer: {
-    padding: 16,
-    gap: 12
-  },
+
   listContent: {
     paddingHorizontal: 16,
-    paddingBottom: 40,
-    gap: 10
+    paddingTop: 14,
+    paddingBottom: 35,
+    flexGrow: 1,
   },
-  card: {
+
+  heroCard: {
+    backgroundColor: PURPLE,
+    borderRadius: 25,
+    padding: 20,
+    marginBottom: 26,
+    overflow: 'hidden',
+  },
+
+  heroCircleOne: {
+    position: 'absolute',
+    width: 190,
+    height: 190,
+    borderRadius: 95,
+    top: -115,
+    right: -55,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+  },
+
+  heroCircleTwo: {
+    position: 'absolute',
+    width: 145,
+    height: 145,
+    borderRadius: 73,
+    bottom: -95,
+    left: 75,
+    backgroundColor: 'rgba(30,15,95,0.18)',
+  },
+
+  heroTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
-  iconCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    justifyContent: 'center',
+
+  heroIcon: {
+    width: 51,
+    height: 51,
+    borderRadius: 16,
     alignItems: 'center',
-    marginRight: 12
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
-  iconText: {
-    fontSize: 20
-  },
-  info: {
-    flex: 1
-  },
-  name: {
-    fontSize: 14.5,
-    fontWeight: '800'
-  },
-  metaRow: {
+
+  heroBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginTop: 4
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    borderRadius: 20,
+    paddingHorizontal: 11,
+    paddingVertical: 8,
   },
-  codePill: {
-    paddingHorizontal: 6,
-    paddingVertical: 1.5,
-    borderRadius: 4,
-    borderWidth: 1
+
+  heroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.8,
   },
-  codeText: {
-    fontSize: 10,
-    fontWeight: '800'
+
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 21,
+    fontWeight: '900',
+    letterSpacing: -0.4,
   },
-  deptText: {
-    fontSize: 12
+
+  heroDescription: {
+    color: '#E8E2FF',
+    fontSize: 11.5,
+    lineHeight: 18,
+    marginTop: 8,
   },
-  actionRow: {
+
+  heroDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginTop: 20,
+    marginBottom: 16,
+  },
+
+  heroStats: {
     flexDirection: 'row',
-    gap: 6
+    alignItems: 'center',
   },
-  actionBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  actionIcon: {
-    fontSize: 14
-  },
-  modalOverlay: {
+
+  heroStatItem: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    justifyContent: 'flex-end'
   },
-  modalContent: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    paddingBottom: 34
+
+  heroStatValue: {
+    color: '#FFFFFF',
+    fontSize: 23,
+    fontWeight: '900',
   },
-  modalGrabBar: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 16
+
+  heroStatLabel: {
+    color: '#E8E2FF',
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 4,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '900'
+
+  heroStatDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    marginHorizontal: 22,
   },
-  modalSub: {
-    fontSize: 12.5,
-    marginTop: 2,
-    marginBottom: 14
+
+  sectionHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
   },
-  label: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    marginBottom: 6,
-    marginTop: 10
+
+  headingText: {
+    flex: 1,
   },
-  input: {
+
+  sectionTitle: {
+    fontSize: 17,
+    fontWeight: '900',
+    letterSpacing: -0.3,
+  },
+
+  sectionSubtitle: {
+    fontSize: 11,
+    marginTop: 5,
+    lineHeight: 16,
+  },
+
+  countBadge: {
+    minWidth: 38,
+    height: 34,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+
+  countBadgeText: {
+    fontSize: 13,
+    fontWeight: '900',
+  },
+
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+
+  searchContainer: {
+    flex: 1,
+  },
+
+  addButton: {
+    minHeight: 45,
+    paddingHorizontal: 13,
+    borderRadius: 13,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+
+  resultRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 13,
+  },
+
+  resultLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 7,
+  },
+
+  resultDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+  },
+
+  resultText: {
+    fontSize: 10.5,
+    fontWeight: '600',
+  },
+
+  clearText: {
+    fontSize: 11,
+    fontWeight: '800',
+    marginLeft: 8,
+  },
+
+  programmeCard: {
+    borderWidth: 1,
+    borderRadius: 19,
+    padding: 14,
+    marginBottom: 12,
+  },
+
+  cardMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  programmeIcon: {
+    width: 49,
+    height: 49,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+
+  programmeInfo: {
+    flex: 1,
+    paddingRight: 5,
+  },
+
+  programmeName: {
+    fontSize: 13.5,
+    fontWeight: '900',
+    lineHeight: 19,
+  },
+
+  codeBadge: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    marginTop: 7,
   },
-  modalBtnRow: {
+
+  codeText: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.7,
+  },
+
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginLeft: 4,
+  },
+
+  actionButton: {
+    width: 35,
+    height: 35,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  cardDivider: {
+    height: 1,
+    marginTop: 14,
+    marginBottom: 11,
+  },
+
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  footerMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 6,
+    marginRight: 10,
+  },
+
+  footerMetaText: {
+    fontSize: 10,
+    fontWeight: '600',
+    flex: 1,
+  },
+
+  indexText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+
+  skeletonContainer: {
+    gap: 12,
+    paddingTop: 4,
+  },
+
+  emptyCard: {
+    alignItems: 'center',
+    padding: 25,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginTop: 5,
+  },
+
+  emptyIcon: {
+    width: 65,
+    height: 65,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+
+  emptyDescription: {
+    fontSize: 11,
+    lineHeight: 18,
+    textAlign: 'center',
+    marginTop: 7,
+    maxWidth: 270,
+  },
+
+  emptyAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 15,
+    paddingVertical: 11,
+    borderRadius: 12,
+    marginTop: 18,
+  },
+
+  emptyActionText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '900',
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(3,6,18,0.65)',
+  },
+
+  modalContent: {
+    borderTopLeftRadius: 27,
+    borderTopRightRadius: 27,
+    maxHeight: '88%',
+    paddingTop: 22,
+  },
+
+  modalScrollContent: {
+    paddingHorizontal: 22,
+    paddingBottom: 30,
+  },
+
+  modalTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+
+  modalIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  closeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  modalTitle: {
+    fontSize: 21,
+    fontWeight: '900',
+    letterSpacing: -0.4,
+  },
+
+  modalSubtitle: {
+    fontSize: 11,
+    lineHeight: 18,
+    marginTop: 7,
+    marginBottom: 20,
+  },
+
+  label: {
+    fontSize: 11,
+    fontWeight: '800',
+    marginBottom: 8,
+    marginTop: 14,
+  },
+
+  required: {
+    color: '#EF4444',
+  },
+
+  inputWrapper: {
+    minHeight: 51,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 13,
+    paddingHorizontal: 13,
+    gap: 10,
+  },
+
+  input: {
+    flex: 1,
+    fontSize: 13,
+    paddingVertical: 12,
+  },
+
+  hintBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 12,
+    borderRadius: 12,
+    gap: 8,
+    marginTop: 16,
+  },
+
+  hintText: {
+    flex: 1,
+    fontSize: 10,
+    lineHeight: 16,
+    fontWeight: '600',
+  },
+
+  warningBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    padding: 13,
+    borderRadius: 12,
+  },
+
+  warningText: {
+    flex: 1,
+    fontSize: 11,
+    lineHeight: 17,
+    fontWeight: '600',
+  },
+
+  modalButtons: {
     flexDirection: 'row',
     gap: 10,
-    marginTop: 20
-  }
+    marginTop: 24,
+  },
+
+  cancelButton: {
+    minHeight: 48,
+    paddingHorizontal: 15,
+    borderRadius: 13,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  cancelButtonText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+
+  saveButton: {
+    flex: 1,
+    minHeight: 48,
+    paddingHorizontal: 12,
+    borderRadius: 13,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+  },
+
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '900',
+  },
 });
 
 export default ProgrammeMasterScreen;

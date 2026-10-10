@@ -12,7 +12,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/tms-mark.png",
+        "foregroundImage": "./assets/tms-logo.png",
         "backgroundColor": "#0F172A"
       }
     },

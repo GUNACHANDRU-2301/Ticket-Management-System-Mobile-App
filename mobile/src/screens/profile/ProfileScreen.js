@@ -1,261 +1,404 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  Switch,
-  TouchableOpacity
+  StatusBar,
 } from 'react-native';
-import { DrawerActions } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+
 import { AuthContext } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import ResponsiveContainer from '../../components/ResponsiveContainer';
 import AppHeader from '../../components/AppHeader';
-import Avatar from '../../components/Avatar';
-import ConfirmDialog from '../../components/ConfirmDialog';
-import { API_BASE_URL } from '../../constants/config';
+
+const PURPLE = '#7C5CFF';
 
 const ProfileScreen = ({ navigation }) => {
-  const { userInfo, logout, isSuperAdmin, isAdmin } = useContext(AuthContext);
-  const { theme, isDark, toggleTheme } = useTheme();
-  const { colors, radius, shadows } = theme;
+  const { userInfo, isAdmin, isTechnician } = useContext(AuthContext);
+  const { theme, isDark } = useTheme();
 
-  const [confirmLogoutVisible, setConfirmLogoutVisible] = useState(false);
+  const profile =
+    userInfo?.user ||
+    userInfo?.data?.user ||
+    userInfo?.data ||
+    userInfo ||
+    {};
 
-  const username = userInfo?.username || 'User';
-  const role = userInfo?.role || 'Staff';
+  const colors = theme?.colors || {};
+
+  const palette = {
+    background: colors.background || (isDark ? '#0B1020' : '#F5F6FC'),
+    surface: colors.surface || (isDark ? '#151B2D' : '#FFFFFF'),
+    card: colors.card || colors.surface || (isDark ? '#151B2D' : '#FFFFFF'),
+    text: colors.text || (isDark ? '#F5F7FF' : '#171936'),
+    secondary: colors.textSecondary || (isDark ? '#A4ADC4' : '#707891'),
+    border: colors.border || (isDark ? '#293149' : '#E8EAF4'),
+    primary: colors.primary || PURPLE,
+    primaryLight: colors.primaryLight || (isDark ? '#292344' : '#EEE8FF'),
+  };
+
+  const getValue = (...values) => {
+    const value = values.find(
+      (item) => item !== undefined && item !== null && item !== ''
+    );
+
+    if (typeof value === 'object') {
+      return value.username || value.name || value.email || 'Not provided';
+    }
+
+    return value ? String(value) : 'Not provided';
+  };
+
+  const name = getValue(
+    profile.username,
+    profile.name,
+    profile.fullName,
+    profile.userName
+  );
+
+  const email = getValue(profile.email);
+  const phone = getValue(profile.phoneNumber, profile.phone, profile.mobile);
+
+  const role =
+    getValue(
+      typeof profile.role === 'object'
+        ? profile.role?.roleName || profile.role?.name
+        : profile.role
+    ) === 'Not provided'
+      ? isAdmin
+        ? 'Super Admin'
+        : isTechnician
+          ? 'Technician'
+          : 'User'
+      : getValue(
+          typeof profile.role === 'object'
+            ? profile.role?.roleName || profile.role?.name
+            : profile.role
+        );
+
+  const department = getValue(
+    typeof profile.department === 'object'
+      ? profile.department?.departmentName || profile.department?.name
+      : profile.department
+  );
+
+  const programme = getValue(
+    typeof profile.programme === 'object'
+      ? profile.programme?.programmeName || profile.programme?.name
+      : profile.programme
+  );
+
+  const initials = name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join('');
+
+  const details = [
+    {
+      label: 'Full Name',
+      value: name,
+      icon: 'person-outline',
+    },
+    {
+      label: 'Email Address',
+      value: email,
+      icon: 'mail-outline',
+    },
+    {
+      label: 'Phone Number',
+      value: phone,
+      icon: 'call-outline',
+    },
+    {
+      label: 'Department',
+      value: department,
+      icon: 'business-outline',
+    },
+    {
+      label: 'Programme',
+      value: programme,
+      icon: 'school-outline',
+    },
+  ];
+
+  const InfoCard = ({ label, value, icon }) => (
+    <View
+      style={[
+        styles.infoCard,
+        {
+          backgroundColor: palette.card,
+          borderColor: palette.border,
+        },
+      ]}
+    >
+      <View
+        style={[
+          styles.infoIcon,
+          { backgroundColor: palette.primaryLight },
+        ]}
+      >
+        <Ionicons
+          name={icon}
+          size={20}
+          color={palette.primary}
+        />
+      </View>
+
+      <View style={styles.infoContent}>
+        <Text style={[styles.infoLabel, { color: palette.secondary }]}>
+          {label}
+        </Text>
+
+        <Text
+          style={[styles.infoValue, { color: palette.text }]}
+          numberOfLines={2}
+        >
+          {value}
+        </Text>
+      </View>
+    </View>
+  );
 
   return (
     <ResponsiveContainer>
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={palette.background}
+      />
+
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: palette.background },
+        ]}
+      >
         <AppHeader
-          title="Profile"
-          subtitle="Account information"
-          showBack={navigation?.canGoBack?.()}
-          onBackPress={() => navigation.goBack()}
-          onMenuPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          title="My Profile"
+          subtitle="Your account information"
           showNotification={false}
           showProfile={false}
         />
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-        {/* Profile Hero Header Card */}
-        <View
-          style={[
-            styles.profileHeroCard,
-            shadows.md,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.borderLight,
-              borderRadius: radius.xl
-            }
-          ]}
-        >
-          <Avatar
-            name={username}
-            size={76}
-            color={colors.primary}
-            online={true}
-            style={styles.avatarWrapper}
-          />
 
-          <Text style={[styles.displayName, { color: colors.text }]}>{username}</Text>
-          <Text style={[styles.userIdText, { color: colors.textMuted }]}>
-            Staff ID: {userInfo?.userId ? `#${userInfo.userId.slice(-6).toUpperCase()}` : '#TMS-USER'}
-          </Text>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* Profile Hero */}
+          <View style={styles.heroCard}>
+            <View style={styles.heroCircleOne} />
+            <View style={styles.heroCircleTwo} />
+
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {initials || 'U'}
+              </Text>
+            </View>
+
+            <Text style={styles.profileName} numberOfLines={2}>
+              {name}
+            </Text>
+
+            <Text style={styles.profileEmail} numberOfLines={2}>
+              {email}
+            </Text>
+
+            <View style={styles.roleBadge}>
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={15}
+                color="#FFFFFF"
+              />
+              <Text style={styles.roleText}>{role}</Text>
+            </View>
+
+            <View style={styles.heroFooter}>
+              <Ionicons
+                name="checkmark-circle"
+                size={15}
+                color="#C8FFE5"
+              />
+              <Text style={styles.heroFooterText}>
+                TMS Account
+              </Text>
+            </View>
+          </View>
+
+          {/* Personal Information */}
+          <View style={styles.sectionHeading}>
+            <View>
+              <Text style={[styles.sectionTitle, { color: palette.text }]}>
+                Personal Information
+              </Text>
+              <Text
+                style={[
+                  styles.sectionSubtitle,
+                  { color: palette.secondary },
+                ]}
+              >
+                Your registered account details
+              </Text>
+            </View>
+
+            <View
+              style={[
+                styles.sectionIcon,
+                { backgroundColor: palette.primaryLight },
+              ]}
+            >
+              <Ionicons
+                name="person-circle-outline"
+                size={22}
+                color={palette.primary}
+              />
+            </View>
+          </View>
+
+          <View style={styles.infoList}>
+            {details.map((item) => (
+              <InfoCard
+                key={item.label}
+                label={item.label}
+                value={item.value}
+                icon={item.icon}
+              />
+            ))}
+          </View>
+
+          {/* Account Information */}
+          <View style={styles.sectionHeading}>
+            <View>
+              <Text style={[styles.sectionTitle, { color: palette.text }]}>
+                Account Information
+              </Text>
+              <Text
+                style={[
+                  styles.sectionSubtitle,
+                  { color: palette.secondary },
+                ]}
+              >
+                Your access and permissions
+              </Text>
+            </View>
+          </View>
 
           <View
             style={[
-              styles.roleBadge,
+              styles.accountCard,
               {
-                backgroundColor: colors.primaryLight,
-                borderColor: colors.border,
-                borderRadius: radius.full
-              }
+                backgroundColor: palette.card,
+                borderColor: palette.border,
+              },
             ]}
           >
-            <View style={[styles.roleDot, { backgroundColor: colors.primary }]} />
-            <Text style={[styles.roleText, { color: colors.primary }]}>{role}</Text>
-          </View>
-        </View>
-
-        {/* Account Details Section */}
-        <View
-          style={[
-            styles.sectionCard,
-            shadows.sm,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.borderLight,
-              borderRadius: radius.lg
-            }
-          ]}
-        >
-          <Text style={[styles.sectionHeading, { color: colors.textSecondary }]}>
-            ACCOUNT CREDENTIALS
-          </Text>
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailLeft}>
-              <Text style={styles.detailIcon}>👤</Text>
-              <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Username</Text>
-            </View>
-            <Text style={[styles.detailValue, { color: colors.text }]}>{username}</Text>
-          </View>
-
-          <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailLeft}>
-              <Text style={styles.detailIcon}>🛡️</Text>
-              <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Access Role</Text>
-            </View>
-            <Text style={[styles.detailValue, { color: colors.text }]}>{role}</Text>
-          </View>
-
-          <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailLeft}>
-              <Text style={styles.detailIcon}>🏢</Text>
-              <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Department</Text>
-            </View>
-            <Text style={[styles.detailValue, { color: colors.text }]}>
-              {userInfo?.department || (isAdmin ? 'Campus Administration' : 'Academic Facilities')}
-            </Text>
-          </View>
-
-          <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailLeft}>
-              <Text style={styles.detailIcon}>🎓</Text>
-              <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Programme</Text>
-            </View>
-            <Text style={[styles.detailValue, { color: colors.text }]}>
-              {userInfo?.programme || (isAdmin ? 'Executive Administration' : 'Campus Infrastructure')}
-            </Text>
-          </View>
-        </View>
-
-        {/* Preferences & Settings */}
-        <View
-          style={[
-            styles.sectionCard,
-            shadows.sm,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.borderLight,
-              borderRadius: radius.lg
-            }
-          ]}
-        >
-          <Text style={[styles.sectionHeading, { color: colors.textSecondary }]}>
-            SYSTEM PREFERENCES
-          </Text>
-
-          <View style={styles.preferenceRow}>
-            <View style={styles.preferenceLeft}>
-              <View style={[styles.iconBox, { backgroundColor: colors.backgroundSubtle }]}>
-                <Text style={styles.preferenceIcon}>{isDark ? '🌙' : '☀️'}</Text>
-              </View>
-              <View>
-                <Text style={[styles.preferenceTitle, { color: colors.text }]}>
-                  Dark Theme
-                </Text>
-                <Text style={[styles.preferenceSub, { color: colors.textMuted }]}>
-                  {isDark ? 'Obsidian slate dark mode active' : 'Clean daytime light palette active'}
-                </Text>
-              </View>
+            <View
+              style={[
+                styles.accountIcon,
+                { backgroundColor: palette.primaryLight },
+              ]}
+            >
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={23}
+                color={palette.primary}
+              />
             </View>
 
-            <Switch
-              value={isDark}
-              onValueChange={toggleTheme}
-              trackColor={{ false: '#CBD5E1', true: colors.primary }}
-              thumbColor="#FFFFFF"
+            <View style={styles.accountContent}>
+              <Text style={[styles.accountTitle, { color: palette.text }]}>
+                Account Role
+              </Text>
+              <Text
+                style={[
+                  styles.accountSubtitle,
+                  { color: palette.secondary },
+                ]}
+              >
+                {role}
+              </Text>
+            </View>
+
+            <Ionicons
+              name="checkmark-circle"
+              size={22}
+              color="#22A875"
             />
           </View>
 
-          <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
+          <View
+            style={[
+              styles.accountCard,
+              {
+                backgroundColor: palette.card,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.accountIcon,
+                { backgroundColor: '#E2F8EE' },
+              ]}
+            >
+              <Ionicons
+                name="business-outline"
+                size={23}
+                color="#22A875"
+              />
+            </View>
 
-          <View style={styles.preferenceRow}>
-            <View style={styles.preferenceLeft}>
-              <View style={[styles.iconBox, { backgroundColor: colors.backgroundSubtle }]}>
-                <Text style={styles.preferenceIcon}>🔗</Text>
-              </View>
-              <View>
-                <Text style={[styles.preferenceTitle, { color: colors.text }]}>
-                  API Endpoint
-                </Text>
-                <Text style={[styles.preferenceSub, { color: colors.textMuted }]} numberOfLines={1}>
-                  {API_BASE_URL}
-                </Text>
-              </View>
+            <View style={styles.accountContent}>
+              <Text style={[styles.accountTitle, { color: palette.text }]}>
+                Department Access
+              </Text>
+              <Text
+                style={[
+                  styles.accountSubtitle,
+                  { color: palette.secondary },
+                ]}
+              >
+                {department}
+              </Text>
             </View>
           </View>
 
-          <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
+          {/* Footer */}
+          <View
+            style={[
+              styles.footer,
+              {
+                backgroundColor: palette.surface,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <Ionicons
+              name="construct-outline"
+              size={22}
+              color={palette.primary}
+            />
 
-          <View style={styles.preferenceRow}>
-            <View style={styles.preferenceLeft}>
-              <View style={[styles.iconBox, { backgroundColor: colors.backgroundSubtle }]}>
-                <Text style={styles.preferenceIcon}>ℹ️</Text>
-              </View>
-              <View>
-                <Text style={[styles.preferenceTitle, { color: colors.text }]}>
-                  App Build Version
-                </Text>
-                <Text style={[styles.preferenceSub, { color: colors.textMuted }]}>
-                  TMS Enterprise v2.0.0 (Production)
-                </Text>
-              </View>
+            <View style={styles.footerContent}>
+              <Text style={[styles.footerTitle, { color: palette.text }]}>
+                TMS Facilities & Maintenance
+              </Text>
+              <Text
+                style={[
+                  styles.footerSubtitle,
+                  { color: palette.secondary },
+                ]}
+              >
+                Ticket Management System
+              </Text>
             </View>
           </View>
-        </View>
 
-        {/* Sign Out Button */}
-        <TouchableOpacity
-          style={[
-            styles.logoutButton,
-            {
-              backgroundColor: colors.dangerLight,
-              borderColor: colors.dangerBorder,
-              borderRadius: radius.md
-            }
-          ]}
-          onPress={() => setConfirmLogoutVisible(true)}
-          activeOpacity={0.82}
-        >
-          <Text style={styles.logoutIcon}>🚪</Text>
-          <Text style={[styles.logoutText, { color: colors.danger }]}>
-            Sign Out of Workspace
+          <Text style={[styles.version, { color: palette.secondary }]}>
+            Version 1.0.0
           </Text>
-        </TouchableOpacity>
-
-        <Text style={[styles.copyrightFooter, { color: colors.textMuted }]}>
-          Campus Facilities & Maintenance Management System{'\n'}
-          Protected by Enterprise Session Security
-        </Text>
-
-        {/* Confirmation Modal */}
-        <ConfirmDialog
-          visible={confirmLogoutVisible}
-          title="Sign Out"
-          message="Are you sure you want to end your session? You will need to log back in to access tickets."
-          confirmText="Sign Out"
-          cancelText="Cancel"
-          icon="🚪"
-          confirmVariant="danger"
-          onConfirm={() => {
-            setConfirmLogoutVisible(false);
-            logout();
-          }}
-          onCancel={() => setConfirmLogoutVisible(false)}
-        />
         </ScrollView>
       </View>
     </ResponsiveContainer>
@@ -263,137 +406,242 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+
   scrollContent: {
     padding: 16,
-    paddingBottom: 40
+    paddingBottom: 35,
   },
-  profileHeroCard: {
-    padding: 24,
+
+  heroCard: {
+    backgroundColor: PURPLE,
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingTop: 26,
+    paddingBottom: 18,
     alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 1
+    marginBottom: 27,
+    overflow: 'hidden',
   },
-  avatarWrapper: {
-    marginBottom: 12
+
+  heroCircleOne: {
+    position: 'absolute',
+    width: 175,
+    height: 175,
+    borderRadius: 90,
+    top: -100,
+    right: -45,
+    backgroundColor: 'rgba(255,255,255,0.10)',
   },
-  displayName: {
+
+  heroCircleTwo: {
+    position: 'absolute',
+    width: 135,
+    height: 135,
+    borderRadius: 70,
+    bottom: -85,
+    left: -35,
+    backgroundColor: 'rgba(30,15,95,0.18)',
+  },
+
+  avatar: {
+    width: 96,
+    height: 96,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.19)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.65)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+
+  avatarText: {
+    color: '#FFFFFF',
+    fontSize: 32,
+    fontWeight: '900',
+  },
+
+  profileName: {
+    color: '#FFFFFF',
     fontSize: 22,
     fontWeight: '900',
-    letterSpacing: -0.4
+    textAlign: 'center',
   },
-  userIdText: {
+
+  profileEmail: {
+    color: '#E9E3FF',
     fontSize: 12,
-    marginTop: 2,
-    fontWeight: '600'
+    marginTop: 7,
+    textAlign: 'center',
   },
+
   roleBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 4.5,
+    gap: 7,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
-    marginTop: 10
+    borderColor: 'rgba(255,255,255,0.23)',
+    borderRadius: 25,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    marginTop: 15,
   },
-  roleDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3
-  },
+
   roleText: {
+    color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: '800'
-  },
-  sectionCard: {
-    padding: 18,
-    marginBottom: 16,
-    borderWidth: 1
-  },
-  sectionHeading: {
-    fontSize: 11,
     fontWeight: '800',
-    letterSpacing: 0.6,
-    marginBottom: 14
   },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8
-  },
-  detailLeft: {
+
+  heroFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10
-  },
-  detailIcon: {
-    fontSize: 15
-  },
-  detailLabel: {
-    fontSize: 13,
-    fontWeight: '600'
-  },
-  detailValue: {
-    fontSize: 13.5,
-    fontWeight: '700'
-  },
-  rowDivider: {
-    height: 1,
-    marginVertical: 4
-  },
-  preferenceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8
-  },
-  preferenceLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
-    marginRight: 12
-  },
-  iconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    gap: 7,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.2)',
+    marginTop: 20,
+    paddingTop: 14,
+    width: '100%',
     justifyContent: 'center',
-    alignItems: 'center'
   },
-  preferenceIcon: {
-    fontSize: 16
-  },
-  preferenceTitle: {
-    fontSize: 14,
-    fontWeight: '700'
-  },
-  preferenceSub: {
-    fontSize: 11.5,
-    marginTop: 1
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
-    borderWidth: 1.2,
-    marginTop: 4,
-    marginBottom: 20
-  },
-  logoutIcon: {
-    fontSize: 16
-  },
-  logoutText: {
-    fontSize: 14.5,
-    fontWeight: '800'
-  },
-  copyrightFooter: {
+
+  heroFooterText: {
+    color: '#FFFFFF',
     fontSize: 11,
+    fontWeight: '700',
+  },
+
+  sectionHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+    marginTop: 2,
+  },
+
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+  },
+
+  sectionSubtitle: {
+    fontSize: 11,
+    marginTop: 5,
+    lineHeight: 16,
+  },
+
+  sectionIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  infoList: {
+    gap: 11,
+    marginBottom: 26,
+  },
+
+  infoCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 17,
+    padding: 14,
+    minHeight: 77,
+  },
+
+  infoIcon: {
+    width: 43,
+    height: 43,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 13,
+  },
+
+  infoContent: {
+    flex: 1,
+  },
+
+  infoLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    marginBottom: 5,
+  },
+
+  infoValue: {
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 19,
+  },
+
+  accountCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 17,
+    borderWidth: 1,
+    padding: 14,
+    marginBottom: 11,
+  },
+
+  accountIcon: {
+    width: 45,
+    height: 45,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 13,
+  },
+
+  accountContent: {
+    flex: 1,
+  },
+
+  accountTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+  },
+
+  accountSubtitle: {
+    fontSize: 11,
+    marginTop: 5,
+  },
+
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 18,
+    marginTop: 14,
+  },
+
+  footerContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+
+  footerTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+  },
+
+  footerSubtitle: {
+    fontSize: 10,
+    marginTop: 5,
+  },
+
+  version: {
     textAlign: 'center',
-    lineHeight: 16
-  }
+    fontSize: 10,
+    marginTop: 17,
+  },
 });
 
 export default ProfileScreen;

@@ -3452,3 +3452,253 @@
 {"_e":"metro:bundling:failed","_t":1791613113770,"id":null,"message":"SyntaxError: D:\\TMS_7 (2)\\TMS_7\\mobile\\src\\screens\\complaints\\RaiseComplaintScreen.js: Unexpected token (981:18)\n\n  979 |                   size={13}\n  980 |                   color={palette.muted}\n> 981 |                 />\n      |                   ^","importStack":null,"filename":"src\\screens\\complaints\\RaiseComplaintScreen.js","targetModuleName":null,"originModulePath":null}
 {"_e":"metro:client_log","_t":1791613129495,"level":"error","data":["Text strings must be rendered within a <Text> component."]}
 {"_e":"metro:client_log","_t":1791613142957,"level":"error","data":["Text strings must be rendered within a <Text> component."]}
+{"_e":"root:init","_t":1791613569543,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791613569545,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791613569549,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791613569956,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791613570477,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791613571003,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791613575424,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791613591291,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791613591291,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791613591305,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791613591405,"id":"1","progress":0.031024018595041326,"total":176,"current":31}
+{"_e":"metro:bundling:progress","_t":1791613591505,"id":"1","progress":0.2088066312881014,"total":302,"current":138}
+{"_e":"metro:bundling:progress","_t":1791613591605,"id":"1","progress":0.24045687769672014,"total":467,"current":229}
+{"_e":"metro:bundling:progress","_t":1791613591705,"id":"1","progress":0.2936832105242853,"total":644,"current":349}
+{"_e":"metro:bundling:progress","_t":1791613591805,"id":"1","progress":0.44760661479855374,"total":704,"current":471}
+{"_e":"metro:bundling:progress","_t":1791613591908,"id":"1","progress":0.6159755142544581,"total":818,"current":642}
+{"_e":"metro:bundling:progress","_t":1791613592008,"id":"1","progress":0.6159755142544581,"total":1005,"current":773}
+{"_e":"metro:bundling:progress","_t":1791613592108,"id":"1","progress":0.6490417018299771,"total":1101,"current":887}
+{"_e":"metro:bundling:progress","_t":1791613592208,"id":"1","progress":0.7404981517900625,"total":1226,"current":1055}
+{"_e":"metro:bundling:progress","_t":1791613592308,"id":"1","progress":0.8117563899602057,"total":1333,"current":1201}
+{"_e":"metro:bundling:progress","_t":1791613592418,"id":"1","progress":0.8869923199788846,"total":1409,"current":1327}
+{"_e":"metro:bundling:progress","_t":1791613592518,"id":"1","progress":0.9613687747416553,"total":1538,"current":1508}
+{"_e":"metro:bundling:done","_t":1791613592678,"id":"1","total":1538,"ms":1387.2688}
+{"_e":"metro:client_log","_t":1791613596381,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.196.37.88:5000/api"]}
+{"_e":"metro:client_log","_t":1791613610334,"level":"error","data":["Text strings must be rendered within a <Text> component."]}
+{"_e":"metro:client_log","_t":1791613678515,"level":"error","data":["[Error: Got an invalid value for 'component' prop for the screen 'ComplaintDetail'. It must be a valid React Component.]"]}
+{"_e":"root:init","_t":1791614894556,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791614894558,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791614894561,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791614894970,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791614895536,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791614896450,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791614900966,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"root:init","_t":1791614960251,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791614960252,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791614960256,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791614960548,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791614960947,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791614961346,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791614965670,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791614973177,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791614973177,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791614973181,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791614973282,"id":"1","progress":0.026195328945170238,"total":173,"current":28}
+{"_e":"metro:bundling:progress","_t":1791614973382,"id":"1","progress":0.22012807280915742,"total":292,"current":137}
+{"_e":"metro:bundling:progress","_t":1791614973483,"id":"1","progress":0.26105395460240544,"total":503,"current":257}
+{"_e":"metro:bundling:progress","_t":1791614973583,"id":"1","progress":0.3095967836334144,"total":647,"current":360}
+{"_e":"metro:bundling:progress","_t":1791614973683,"id":"1","progress":0.4671358739574261,"total":714,"current":488}
+{"_e":"metro:bundling:progress","_t":1791614973784,"id":"1","progress":0.6287466192709344,"total":821,"current":651}
+{"_e":"metro:bundling:progress","_t":1791614973904,"id":"1","progress":0.6447145328719723,"total":1020,"current":819}
+{"_e":"metro:bundling:progress","_t":1791614974005,"id":"1","progress":0.6458049589484245,"total":1105,"current":888}
+{"_e":"metro:bundling:progress","_t":1791614974105,"id":"1","progress":0.7222873384200483,"total":1199,"current":1019}
+{"_e":"metro:bundling:progress","_t":1791614974205,"id":"1","progress":0.7556674313348627,"total":1270,"current":1104}
+{"_e":"metro:bundling:progress","_t":1791614974305,"id":"1","progress":0.8442287005895889,"total":1355,"current":1245}
+{"_e":"metro:bundling:progress","_t":1791614974405,"id":"1","progress":0.9473777777777779,"total":1425,"current":1387}
+{"_e":"metro:bundling:progress","_t":1791614974505,"id":"1","progress":0.9987167149220307,"total":1558,"current":1557}
+{"_e":"metro:bundling:done","_t":1791614974633,"id":"1","total":1558,"ms":1455.6466}
+{"_e":"root:init","_t":1791615014306,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791615014307,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791615014310,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791615014594,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791615014979,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791615015377,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791615020072,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791615021945,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791615021945,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791615021950,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791615022051,"id":"1","progress":0.0771604938271605,"total":234,"current":65}
+{"_e":"metro:bundling:progress","_t":1791615022151,"id":"1","progress":0.22773109847695303,"total":373,"current":178}
+{"_e":"metro:bundling:progress","_t":1791615022251,"id":"1","progress":0.285170530797353,"total":588,"current":314}
+{"_e":"metro:bundling:progress","_t":1791615022351,"id":"1","progress":0.43296760055468125,"total":731,"current":481}
+{"_e":"metro:bundling:progress","_t":1791615022453,"id":"1","progress":0.627217752677287,"total":822,"current":651}
+{"_e":"metro:bundling:progress","_t":1791615022573,"id":"1","progress":0.6447145328719723,"total":1020,"current":819}
+{"_e":"metro:bundling:progress","_t":1791615022673,"id":"1","progress":0.7316610887234479,"total":1210,"current":1035}
+{"_e":"metro:bundling:progress","_t":1791615022775,"id":"1","progress":0.8129757009261513,"total":1332,"current":1201}
+{"_e":"metro:bundling:progress","_t":1791615022875,"id":"1","progress":0.900685626191732,"total":1413,"current":1341}
+{"_e":"metro:bundling:progress","_t":1791615022981,"id":"1","progress":0.999,"total":1558,"current":1558}
+{"_e":"metro:bundling:done","_t":1791615023079,"id":"1","total":1558,"ms":1134.1214}
+{"_e":"metro:client_log","_t":1791615026758,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.196.37.88:5000/api"]}
+{"_e":"metro:client_log","_t":1791615137631,"level":"error","data":["[Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.\n\nCheck the render method of `DashboardScreen`.]"]}
+{"_e":"metro:bundling:failed","_t":1791615139243,"id":null,"message":"SyntaxError: D:\\TMS_7 (2)\\TMS_7\\mobile\\src\\components\\AppHeader.js: Unexpected token (168:34)\n\n  166 | };\n  167 |\n> 168 | const styles = StyleSheet.create({\n      |                                   ^","importStack":null,"filename":"src\\components\\AppHeader.js","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1791615139438,"id":null,"message":"SyntaxError: D:\\TMS_7 (2)\\TMS_7\\mobile\\src\\components\\AppHeader.js: Unexpected token (168:34)\n\n  166 | };\n  167 |\n> 168 | const styles = StyleSheet.create({\n      |                                   ^","importStack":null,"filename":"src\\components\\AppHeader.js","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1791615144950,"id":null,"message":"SyntaxError: D:\\TMS_7 (2)\\TMS_7\\mobile\\src\\components\\AppHeader.js: Unexpected token (168:34)\n\n  166 | };\n  167 |\n> 168 | const styles = StyleSheet.create({\n      |                                   ^","importStack":null,"filename":"src\\components\\AppHeader.js","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:client_log","_t":1791615183492,"level":"error","data":["Text strings must be rendered within a <Text> component."]}
+{"_e":"metro:bundling:failed","_t":1791615290264,"id":null,"message":"SyntaxError: D:\\TMS_7 (2)\\TMS_7\\mobile\\src\\screens\\reports\\ReportsScreen.js: Missing initializer in const declaration. (118:10)\n\n  116 |   }, [fetchReports]);\n  117 |\n> 118 |   const on\n      |           ^","importStack":null,"filename":"src\\screens\\reports\\ReportsScreen.js","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:client_log","_t":1791615294158,"level":"error","data":["[Error: Got an invalid value for 'component' prop for the screen 'Reports'. It must be a valid React Component.]"]}
+{"_e":"metro:client_log","_t":1791615405310,"level":"error","data":["[ReferenceError: Property 'tms' doesn't exist]"]}
+{"_e":"root:init","_t":1791615485966,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791615485967,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791615485970,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791615486315,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791615486795,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791615487491,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791615491695,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791615512415,"id":"2","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791615512416,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1791615512517,"id":"2","total":1,"ms":102.4811}
+{"_e":"metro:client_log","_t":1791615516012,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.196.37.88:5000/api"]}
+{"_e":"metro:bundling:failed","_t":1791615548208,"id":null,"message":"Unable to resolve \"../../../assets/tms-mark.png\" from \"src\\screens\\auth\\LoginScreen.js\"\n  156 |           <View style={styles.logoFrame}>\n  157 |             <Image\n> 158 |               source={require('../../../assets/tms-mark.png')}\n      |                                ^\n  159 |               style={styles.logoImage}\n  160 |               resizeMode=\"contain\"\n  161 |               accessibilityLabel=\"TMS campus maintenance logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\screens\\auth\\LoginScreen.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AuthNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/auth/LoginScreen\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./AuthNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../../assets/tms-mark.png","originModulePath":"src\\screens\\auth\\LoginScreen.js"}
+{"_e":"metro:bundling:failed","_t":1791615548464,"id":null,"message":"Unable to resolve \"../../../assets/tms-mark.png\" from \"src\\screens\\auth\\LoginScreen.js\"\n  156 |           <View style={styles.logoFrame}>\n  157 |             <Image\n> 158 |               source={require('../../../assets/tms-mark.png')}\n      |                                ^\n  159 |               style={styles.logoImage}\n  160 |               resizeMode=\"contain\"\n  161 |               accessibilityLabel=\"TMS campus maintenance logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\screens\\auth\\LoginScreen.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AuthNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/auth/LoginScreen\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./AuthNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../../assets/tms-mark.png","originModulePath":"src\\screens\\auth\\LoginScreen.js"}
+{"_e":"root:init","_t":1791615633302,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791615633302,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791615633305,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791615633594,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791615634403,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791615635214,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791615641043,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791615754013,"id":"4","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791615754013,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791615754021,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791615754121,"id":"4","progress":0.040855590765052054,"total":188,"current":38}
+{"_e":"metro:bundling:progress","_t":1791615754221,"id":"4","progress":0.24236686390532547,"total":325,"current":160}
+{"_e":"metro:bundling:progress","_t":1791615754321,"id":"4","progress":0.25594038688077375,"total":508,"current":257}
+{"_e":"metro:bundling:progress","_t":1791615754421,"id":"4","progress":0.3175917956703541,"total":653,"current":368}
+{"_e":"metro:bundling:progress","_t":1791615754522,"id":"4","progress":0.5955812854442344,"total":736,"current":568}
+{"_e":"metro:bundling:progress","_t":1791615754622,"id":"4","progress":0.637588482832937,"total":928,"current":741}
+{"_e":"metro:bundling:progress","_t":1791615754722,"id":"4","progress":0.6487570247933884,"total":1100,"current":886}
+{"_e":"metro:bundling:progress","_t":1791615754822,"id":"4","progress":0.773552039483234,"total":1245,"current":1095}
+{"_e":"metro:bundling:progress","_t":1791615754922,"id":"4","progress":0.8398337150148729,"total":1376,"current":1261}
+{"_e":"metro:bundling:progress","_t":1791615755023,"id":"4","progress":0.9574954772459969,"total":1443,"current":1412}
+{"_e":"metro:bundling:done","_t":1791615755205,"id":"4","total":1443,"ms":1191.4477}
+{"_e":"metro:client_log","_t":1791615764976,"level":"log","data":["🔗 Configured API_BASE_URL:","http://10.18.180.88:5000/api"]}
+{"_e":"metro:bundling:failed","_t":1791616240322,"id":null,"message":"Unable to resolve \"../../../assets/tms-mark.png\" from \"src\\screens\\auth\\LoginScreen.js\"\n  156 |           <View style={styles.logoFrame}>\n  157 |             <Image\n> 158 |               source={require('../../../assets/tms-mark.png')}\n      |                                ^\n  159 |               style={styles.logoImage}\n  160 |               resizeMode=\"contain\"\n  161 |               accessibilityLabel=\"TMS campus maintenance logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\screens\\auth\\LoginScreen.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AuthNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/auth/LoginScreen\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./AuthNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../../assets/tms-mark.png","originModulePath":"src\\screens\\auth\\LoginScreen.js"}
+{"_e":"metro:server_log","_t":1791616469011,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","HD1901 - 12 - API 31","60"]}
+{"_e":"metro:server_log","_t":1791616999520,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","HD1901 - 12 - API 31","60"]}
+{"_e":"root:init","_t":1791617035748,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791617035750,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791617035752,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791617036151,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791617036632,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791617037349,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791617041606,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791617045956,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791617045957,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617045961,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617046061,"id":"1","progress":0.01411626311145966,"total":202,"current":24}
+{"_e":"metro:bundling:progress","_t":1791617046161,"id":"1","progress":0.11475983830067162,"total":307,"current":104}
+{"_e":"metro:bundling:progress","_t":1791617046262,"id":"1","progress":0.2013203387996195,"total":419,"current":188}
+{"_e":"metro:bundling:progress","_t":1791617046362,"id":"1","progress":0.26866039856363594,"total":573,"current":297}
+{"_e":"metro:bundling:progress","_t":1791617046462,"id":"1","progress":0.36,"total":730,"current":438}
+{"_e":"metro:bundling:progress","_t":1791617046562,"id":"1","progress":0.48485474733155837,"total":787,"current":548}
+{"_e":"metro:bundling:progress","_t":1791617046662,"id":"1","progress":0.6300710345758519,"total":931,"current":739}
+{"_e":"metro:bundling:progress","_t":1791617046762,"id":"1","progress":0.6976045971074379,"total":1056,"current":882}
+{"_e":"metro:bundling:progress","_t":1791617046862,"id":"1","progress":0.7514863383369877,"total":1232,"current":1068}
+{"_e":"metro:bundling:progress","_t":1791617046976,"id":"1","progress":0.8194173688037873,"total":1361,"current":1232}
+{"_e":"metro:bundling:progress","_t":1791617047076,"id":"1","progress":0.9683542660159549,"total":1442,"current":1419}
+{"_e":"metro:bundling:failed","_t":1791617047148,"id":"1","message":"Unable to resolve \"../../assets/tms-mark.png\" from \"src\\components\\NavigationDrawer.js\"\n  220 |             <View style={styles.logoContainer}>\n  221 |               <Image\n> 222 |                 source={require('../../assets/tms-mark.png')}\n      |                                  ^\n  223 |                 style={styles.logo}\n  224 |                 resizeMode=\"contain\"\n  225 |                 accessibilityLabel=\"TMS logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\components\\NavigationDrawer.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\MainDrawerNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../components/NavigationDrawer\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./MainDrawerNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../assets/tms-mark.png","originModulePath":"src\\components\\NavigationDrawer.js"}
+{"_e":"root:init","_t":1791617152471,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791617152472,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791617152475,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791617152753,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791617153132,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791617153444,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791617157635,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791617169276,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791617169277,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617169283,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617169383,"id":"1","progress":0.03137959183673469,"total":175,"current":31}
+{"_e":"metro:bundling:progress","_t":1791617169483,"id":"1","progress":0.24390266852346718,"total":326,"current":161}
+{"_e":"metro:bundling:progress","_t":1791617169583,"id":"1","progress":0.2776253695946248,"total":539,"current":284}
+{"_e":"metro:bundling:progress","_t":1791617169683,"id":"1","progress":0.3736583046429924,"total":674,"current":412}
+{"_e":"metro:bundling:progress","_t":1791617169783,"id":"1","progress":0.6133709535658352,"total":761,"current":596}
+{"_e":"metro:bundling:progress","_t":1791617169883,"id":"1","progress":0.7020714541927543,"total":913,"current":765}
+{"_e":"metro:bundling:progress","_t":1791617169983,"id":"1","progress":0.7020714541927543,"total":1084,"current":868}
+{"_e":"metro:bundling:progress","_t":1791617170083,"id":"1","progress":0.7427254536082405,"total":1223,"current":1054}
+{"_e":"metro:bundling:progress","_t":1791617170191,"id":"1","progress":0.8125754073198391,"total":1329,"current":1198}
+{"_e":"metro:bundling:progress","_t":1791617170291,"id":"1","progress":0.8851818905522176,"total":1403,"current":1320}
+{"_e":"metro:bundling:progress","_t":1791617170391,"id":"1","progress":0.9485948350694445,"total":1536,"current":1496}
+{"_e":"metro:bundling:failed","_t":1791617170415,"id":"1","message":"Unable to resolve \"../../assets/tms-mark.png\" from \"src\\components\\NavigationDrawer.js\"\n  220 |             <View style={styles.logoContainer}>\n  221 |               <Image\n> 222 |                 source={require('../../assets/tms-mark.png')}\n      |                                  ^\n  223 |                 style={styles.logo}\n  224 |                 resizeMode=\"contain\"\n  225 |                 accessibilityLabel=\"TMS logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\components\\NavigationDrawer.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\MainDrawerNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../components/NavigationDrawer\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./MainDrawerNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../assets/tms-mark.png","originModulePath":"src\\components\\NavigationDrawer.js"}
+{"_e":"metro:bundling:started","_t":1791617252371,"id":"2","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791617252371,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617252373,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617252473,"id":"2","progress":0.09890247100101138,"total":283,"current":89}
+{"_e":"metro:bundling:progress","_t":1791617252573,"id":"2","progress":0.2833430149096275,"total":387,"current":206}
+{"_e":"metro:bundling:progress","_t":1791617252673,"id":"2","progress":0.30961026326392227,"total":638,"current":355}
+{"_e":"metro:bundling:progress","_t":1791617252773,"id":"2","progress":0.4832377785297793,"total":784,"current":545}
+{"_e":"metro:bundling:progress","_t":1791617252877,"id":"2","progress":0.5625,"total":952,"current":714}
+{"_e":"metro:bundling:progress","_t":1791617252976,"id":"2","progress":0.7018071162838238,"total":1097,"current":919}
+{"_e":"metro:bundling:progress","_t":1791617253076,"id":"2","progress":0.7920729896081109,"total":1318,"current":1173}
+{"_e":"metro:bundling:progress","_t":1791617253176,"id":"2","progress":0.8772377050510953,"total":1404,"current":1315}
+{"_e":"metro:bundling:failed","_t":1791617253268,"id":"2","message":"Unable to resolve \"../../assets/tms-mark.png\" from \"src\\components\\NavigationDrawer.js\"\n  220 |             <View style={styles.logoContainer}>\n  221 |               <Image\n> 222 |                 source={require('../../assets/tms-mark.png')}\n      |                                  ^\n  223 |                 style={styles.logo}\n  224 |                 resizeMode=\"contain\"\n  225 |                 accessibilityLabel=\"TMS logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\components\\NavigationDrawer.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\MainDrawerNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../components/NavigationDrawer\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./MainDrawerNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../assets/tms-mark.png","originModulePath":"src\\components\\NavigationDrawer.js"}
+{"_e":"root:init","_t":1791617310138,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791617310140,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791617310143,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791617310447,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791617310832,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791617311160,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791617315457,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791617320825,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791617320826,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617320832,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617320931,"id":"1","progress":0.03873358985966501,"total":188,"current":37}
+{"_e":"metro:bundling:progress","_t":1791617321031,"id":"1","progress":0.21544805414157417,"total":293,"current":136}
+{"_e":"metro:bundling:progress","_t":1791617321132,"id":"1","progress":0.26691074252932545,"total":511,"current":264}
+{"_e":"metro:bundling:progress","_t":1791617321232,"id":"1","progress":0.31248794413795755,"total":644,"current":360}
+{"_e":"metro:bundling:progress","_t":1791617321336,"id":"1","progress":0.5702638833441495,"total":727,"current":549}
+{"_e":"metro:bundling:progress","_t":1791617321436,"id":"1","progress":0.6685687757764497,"total":872,"current":713}
+{"_e":"metro:bundling:progress","_t":1791617321536,"id":"1","progress":0.6685687757764497,"total":1009,"current":794}
+{"_e":"metro:bundling:progress","_t":1791617321636,"id":"1","progress":0.6685687757764497,"total":1056,"current":838}
+{"_e":"metro:bundling:progress","_t":1791617321736,"id":"1","progress":0.7249143675742264,"total":1198,"current":1020}
+{"_e":"metro:bundling:progress","_t":1791617321837,"id":"1","progress":0.8098645654811547,"total":1329,"current":1196}
+{"_e":"metro:bundling:progress","_t":1791617321943,"id":"1","progress":0.8864450825293396,"total":1402,"current":1320}
+{"_e":"metro:bundling:progress","_t":1791617322043,"id":"1","progress":0.9884431146910887,"total":1553,"current":1544}
+{"_e":"metro:bundling:failed","_t":1791617322051,"id":"1","message":"Unable to resolve \"../../assets/tms-mark.png\" from \"src\\components\\NavigationDrawer.js\"\n  220 |             <View style={styles.logoContainer}>\n  221 |               <Image\n> 222 |                 source={require('../../assets/tms-mark.png')}\n      |                                  ^\n  223 |                 style={styles.logo}\n  224 |                 resizeMode=\"contain\"\n  225 |                 accessibilityLabel=\"TMS logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\components\\NavigationDrawer.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\MainDrawerNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../components/NavigationDrawer\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./MainDrawerNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../assets/tms-mark.png","originModulePath":"src\\components\\NavigationDrawer.js"}
+{"_e":"root:init","_t":1791617408939,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791617408940,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791617408942,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791617409281,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791617409658,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791617409971,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791617414839,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791617489862,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791617489862,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617489867,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617489967,"id":"1","progress":0.02681166854758729,"total":171,"current":28}
+{"_e":"metro:bundling:progress","_t":1791617490067,"id":"1","progress":0.1871636235601831,"total":282,"current":122}
+{"_e":"metro:bundling:progress","_t":1791617490168,"id":"1","progress":0.25,"total":500,"current":250}
+{"_e":"metro:bundling:progress","_t":1791617490268,"id":"1","progress":0.3150468262226847,"total":620,"current":348}
+{"_e":"metro:bundling:progress","_t":1791617490368,"id":"1","progress":0.5002491192555454,"total":714,"current":505}
+{"_e":"metro:bundling:progress","_t":1791617490468,"id":"1","progress":0.6502413546526459,"total":847,"current":683}
+{"_e":"metro:bundling:progress","_t":1791617490571,"id":"1","progress":0.6502413546526459,"total":1017,"current":816}
+{"_e":"metro:bundling:progress","_t":1791617490670,"id":"1","progress":0.7218610435864097,"total":1197,"current":1017}
+{"_e":"metro:bundling:progress","_t":1791617490785,"id":"1","progress":0.8125754073198391,"total":1329,"current":1198}
+{"_e":"metro:bundling:progress","_t":1791617490885,"id":"1","progress":0.9348080591866413,"total":1418,"current":1371}
+{"_e":"metro:bundling:failed","_t":1791617490967,"id":"1","message":"Unable to resolve \"../../../assets/tms-mark.png\" from \"src\\screens\\auth\\LoginScreen.js\"\n  156 |           <View style={styles.logoFrame}>\n  157 |             <Image\n> 158 |               source={require('../../../assets/tms-mark.png')}\n      |                                ^\n  159 |               style={styles.logoImage}\n  160 |               resizeMode=\"contain\"\n  161 |               accessibilityLabel=\"TMS campus maintenance logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\screens\\auth\\LoginScreen.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AuthNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/auth/LoginScreen\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./AuthNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../../assets/tms-mark.png","originModulePath":"src\\screens\\auth\\LoginScreen.js"}
+{"_e":"root:init","_t":1791617641830,"format":"v0-jsonl","version":"57.0.28"}
+{"_e":"env:mode","_t":1791617641831,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791617641834,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791617642121,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791617642508,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791617642862,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791617647091,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791617652310,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1791617652311,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617652316,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791617652415,"id":"1","progress":0.04791960595034776,"total":201,"current":44}
+{"_e":"metro:bundling:progress","_t":1791617652515,"id":"1","progress":0.20608717561098513,"total":315,"current":143}
+{"_e":"metro:bundling:progress","_t":1791617652615,"id":"1","progress":0.2948150634765625,"total":512,"current":278}
+{"_e":"metro:bundling:progress","_t":1791617652715,"id":"1","progress":0.36475001208894703,"total":659,"current":398}
+{"_e":"metro:bundling:progress","_t":1791617652825,"id":"1","progress":0.6065810088572802,"total":737,"current":574}
+{"_e":"metro:bundling:progress","_t":1791617652925,"id":"1","progress":0.6389420032115762,"total":907,"current":725}
+{"_e":"metro:bundling:progress","_t":1791617653025,"id":"1","progress":0.6389420032115762,"total":1042,"current":827}
+{"_e":"metro:bundling:progress","_t":1791617653132,"id":"1","progress":0.7204421524432076,"total":1197,"current":1016}
+{"_e":"metro:bundling:progress","_t":1791617653232,"id":"1","progress":0.7439570658716999,"total":1273,"current":1098}
+{"_e":"metro:bundling:progress","_t":1791617653337,"id":"1","progress":0.8112194202263452,"total":1329,"current":1197}
+{"_e":"metro:bundling:progress","_t":1791617653437,"id":"1","progress":0.8690707792617435,"total":1402,"current":1307}
+{"_e":"metro:bundling:progress","_t":1791617653542,"id":"1","progress":0.9087004148978003,"total":1412,"current":1346}
+{"_e":"metro:bundling:progress","_t":1791617653642,"id":"1","progress":0.9730695286031805,"total":1549,"current":1528}
+{"_e":"metro:bundling:progress","_t":1791617653742,"id":"1","progress":0.9987150659855539,"total":1556,"current":1555}
+{"_e":"metro:bundling:failed","_t":1791617653775,"id":"1","message":"Unable to resolve \"../../../assets/tms-mark.png\" from \"src\\screens\\auth\\LoginScreen.js\"\n  156 |           <View style={styles.logoFrame}>\n  157 |             <Image\n> 158 |               source={require('../../../assets/tms-mark.png')}\n      |                                ^\n  159 |               style={styles.logoImage}\n  160 |               resizeMode=\"contain\"\n  161 |               accessibilityLabel=\"TMS campus maintenance logo\"","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\screens\\auth\\LoginScreen.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../../assets/tms-mark.png\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AuthNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/auth/LoginScreen\"\u001b[39m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./AuthNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90mnode_modules\\expo\\AppEntry.js\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"../../App\"\u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m \u001b[39m\u001b[90m\u001b[39m\n\u001b[90m\u001b[90m |\u001b[39m\u001b[90m \u001b[36mimport\u001b[39m\u001b[90m \u001b[32m\"./node_modules/\u001b[1mexpo\u001b[22m/AppEntry\"\u001b[39m\u001b[90m\u001b[39m\n","filename":null,"targetModuleName":"../../../assets/tms-mark.png","originModulePath":"src\\screens\\auth\\LoginScreen.js"}

@@ -219,7 +219,7 @@ const NavigationDrawer = (props) => {
           <View style={styles.brandHeader}>
             <View style={styles.logoContainer}>
               <Image
-                source={require('../../assets/tms-mark.png')}
+                source={require('../../assets/tms-logo.png')}
                 style={styles.logo}
                 resizeMode="contain"
                 accessibilityLabel="TMS logo"

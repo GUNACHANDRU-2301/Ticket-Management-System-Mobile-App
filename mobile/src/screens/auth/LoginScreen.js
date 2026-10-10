@@ -155,7 +155,7 @@ const LoginScreen = () => {
 
           <View style={styles.logoFrame}>
             <Image
-              source={require('../../../assets/tms-mark.png')}
+              source={require('../../../assets/tms-logo.png')}
               style={styles.logoImage}
               resizeMode="contain"
               accessibilityLabel="TMS campus maintenance logo"

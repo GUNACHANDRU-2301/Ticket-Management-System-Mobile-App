@@ -1,210 +1,536 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
+  StatusBar,
+  Pressable,
   Switch,
-  TouchableOpacity
+  Alert,
 } from 'react-native';
+
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../context/ThemeContext';
 import { AuthContext } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import ResponsiveContainer from '../../components/ResponsiveContainer';
 import AppHeader from '../../components/AppHeader';
-import { API_BASE_URL } from '../../constants/config';
+
+const PURPLE = '#7C5CFF';
 
 const SettingsScreen = ({ navigation }) => {
-  const insets = useSafeAreaInsets();
-  const { theme, isDark, toggleTheme } = useTheme();
   const { userInfo } = useContext(AuthContext);
-  const { colors } = theme;
+  const { theme, isDark } = useTheme();
 
-  const SettingRow = ({ icon, iconColor, iconBg, title, subtitle, right, onPress }) => (
-    <TouchableOpacity
-      style={styles.settingRow}
-      onPress={onPress}
-      activeOpacity={onPress ? 0.7 : 1}
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  const colors = theme?.colors || {};
+
+  const palette = {
+    background: colors.background || (isDark ? '#0B1020' : '#F5F6FC'),
+    surface: colors.surface || (isDark ? '#151B2D' : '#FFFFFF'),
+    card: colors.card || colors.surface || (isDark ? '#151B2D' : '#FFFFFF'),
+    text: colors.text || (isDark ? '#F5F7FF' : '#171936'),
+    secondary:
+      colors.textSecondary || (isDark ? '#A4ADC4' : '#737B93'),
+    border: colors.border || (isDark ? '#293149' : '#E8EAF4'),
+    primary: colors.primary || PURPLE,
+    primaryLight:
+      colors.primaryLight || (isDark ? '#292344' : '#EEE8FF'),
+  };
+
+  const profile =
+    userInfo?.user ||
+    userInfo?.data?.user ||
+    userInfo?.data ||
+    userInfo ||
+    {};
+
+  const name =
+    profile.username ||
+    profile.name ||
+    profile.fullName ||
+    'TMS User';
+
+  const email = profile.email || 'Account settings';
+
+  const SettingRow = ({
+    icon,
+    title,
+    subtitle,
+    color,
+    tint,
+    onPress,
+    rightElement,
+    showArrow = true,
+  }) => (
+    <Pressable
       disabled={!onPress}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.settingRow,
+        {
+          backgroundColor: palette.card,
+          borderColor: palette.border,
+          opacity: pressed && onPress ? 0.75 : 1,
+        },
+      ]}
     >
-      <View style={[styles.settingIconBox, { backgroundColor: iconBg || colors.surface }]}>
-        <Ionicons name={icon} size={18} color={iconColor || colors.textSecondary} />
+      <View
+        style={[
+          styles.settingIcon,
+          { backgroundColor: tint || palette.primaryLight },
+        ]}
+      >
+        <Ionicons
+          name={icon}
+          size={21}
+          color={color || palette.primary}
+        />
       </View>
-      <View style={styles.settingTextCol}>
-        <Text style={[styles.settingTitle, { color: colors.text }]}>{title}</Text>
-        {subtitle ? (
-          <Text style={[styles.settingSub, { color: colors.textMuted }]} numberOfLines={1}>
+
+      <View style={styles.settingContent}>
+        <Text style={[styles.settingTitle, { color: palette.text }]}>
+          {title}
+        </Text>
+
+        {!!subtitle && (
+          <Text
+            style={[
+              styles.settingSubtitle,
+              { color: palette.secondary },
+            ]}
+            numberOfLines={2}
+          >
             {subtitle}
           </Text>
-        ) : null}
+        )}
       </View>
-      {right}
-    </TouchableOpacity>
+
+      {rightElement ? (
+        rightElement
+      ) : showArrow ? (
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={palette.secondary}
+        />
+      ) : null}
+    </Pressable>
+  );
+
+  const SectionHeading = ({ title, subtitle }) => (
+    <View style={styles.sectionHeading}>
+      <Text style={[styles.sectionTitle, { color: palette.text }]}>
+        {title}
+      </Text>
+
+      {!!subtitle && (
+        <Text style={[styles.sectionSubtitle, { color: palette.secondary }]}>
+          {subtitle}
+        </Text>
+      )}
+    </View>
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader
-        title="Settings"
-        subtitle="App preferences"
-        onMenuPress={() => navigation.openDrawer()}
-        showNotification={false}
-        showProfile={false}
-        username={userInfo?.username}
+    <ResponsiveContainer>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={palette.background}
       />
 
-      <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 20 }]}
-        showsVerticalScrollIndicator={false}
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: palette.background },
+        ]}
       >
-        {/* Appearance */}
-        <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>APPEARANCE</Text>
-        <View
-          style={[
-            styles.sectionCard,
-            { backgroundColor: colors.surface, borderColor: colors.border }
-          ]}
+        <AppHeader
+          title="Settings"
+          subtitle="Personalise your TMS experience"
+          showNotification={false}
+          showProfile={false}
+        />
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
+          {/* Hero */}
+          <View style={styles.heroCard}>
+            <View style={styles.heroCircleOne} />
+            <View style={styles.heroCircleTwo} />
+
+            <View style={styles.heroIcon}>
+              <Ionicons
+                name="settings-outline"
+                size={32}
+                color="#FFFFFF"
+              />
+            </View>
+
+            <Text style={styles.heroTitle}>App Settings</Text>
+
+            <Text style={styles.heroSubtitle}>
+              Manage your preferences and account
+            </Text>
+
+            <View style={styles.heroBadge}>
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={14}
+                color="#FFFFFF"
+              />
+              <Text style={styles.heroBadgeText}>
+                TMS FACILITIES
+              </Text>
+            </View>
+          </View>
+
+          {/* Account */}
+          <SectionHeading
+            title="Account"
+            subtitle="Manage your personal information"
+          />
+
           <SettingRow
-            icon={isDark ? 'moon' : 'sunny'}
-            iconColor={isDark ? '#FBBF24' : '#F59E0B'}
-            iconBg={isDark ? 'rgba(251, 191, 36, 0.12)' : 'rgba(245, 158, 11, 0.1)'}
-            title="Dark Mode"
-            subtitle={isDark ? 'Dark theme active' : 'Light theme active'}
-            right={
+            icon="person-outline"
+            title="My Profile"
+            subtitle={name}
+            onPress={() => navigation.navigate('Profile')}
+          />
+
+          <SettingRow
+            icon="mail-outline"
+            title="Email Address"
+            subtitle={email}
+            showArrow={false}
+          />
+
+          {/* Preferences */}
+          <SectionHeading
+            title="Preferences"
+            subtitle="Control your app experience"
+          />
+
+          <SettingRow
+            icon="notifications-outline"
+            title="Notifications"
+            subtitle="Enable complaint update alerts"
+            rightElement={
               <Switch
-                value={isDark}
-                onValueChange={toggleTheme}
-                trackColor={{ false: '#CBD5E1', true: '#7C5CFF' }}
+                value={notificationsEnabled}
+                onValueChange={setNotificationsEnabled}
+                trackColor={{
+                  false: palette.border,
+                  true: palette.primary,
+                }}
                 thumbColor="#FFFFFF"
               />
             }
+            showArrow={false}
           />
-        </View>
 
-        {/* System */}
-        <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>SYSTEM</Text>
-        <View
-          style={[
-            styles.sectionCard,
-            { backgroundColor: colors.surface, borderColor: colors.border }
-          ]}
-        >
           <SettingRow
-            icon="server-outline"
-            iconColor="#4F7CFF"
-            iconBg="rgba(79, 124, 255, 0.12)"
-            title="API Server"
-            subtitle={API_BASE_URL}
+            icon="volume-medium-outline"
+            title="Sound"
+            subtitle="Notification sound preference"
+            rightElement={
+              <Switch
+                value={soundEnabled}
+                onValueChange={setSoundEnabled}
+                trackColor={{
+                  false: palette.border,
+                  true: palette.primary,
+                }}
+                thumbColor="#FFFFFF"
+              />
+            }
+            showArrow={false}
           />
 
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <SettingRow
+            icon={isDark ? 'moon-outline' : 'sunny-outline'}
+            title="Appearance"
+            subtitle={`Current theme: ${isDark ? 'Dark' : 'Light'}`}
+            rightElement={
+              <View
+                style={[
+                  styles.themeBadge,
+                  { backgroundColor: palette.primaryLight },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.themeBadgeText,
+                    { color: palette.primary },
+                  ]}
+                >
+                  {isDark ? 'DARK' : 'LIGHT'}
+                </Text>
+              </View>
+            }
+            showArrow={false}
+          />
+
+          {/* Support */}
+          <SectionHeading
+            title="Support"
+            subtitle="Application information"
+          />
+
+          <SettingRow
+            icon="help-circle-outline"
+            title="Help & Support"
+            subtitle="Get assistance with TMS"
+            onPress={() =>
+              Alert.alert(
+                'Help & Support',
+                'For assistance, contact your campus TMS administrator.'
+              )
+            }
+          />
 
           <SettingRow
             icon="information-circle-outline"
-            iconColor="#22C55E"
-            iconBg="rgba(34, 197, 94, 0.12)"
-            title="App Version"
-            subtitle="TMS v2.0.0 — Enterprise Build"
+            title="About TMS"
+            subtitle="Ticket Management System"
+            onPress={() =>
+              Alert.alert(
+                'About TMS',
+                'TMS Facilities & Maintenance\nVersion 1.0.0'
+              )
+            }
           />
 
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          {/* Footer */}
+          <View
+            style={[
+              styles.footerCard,
+              {
+                backgroundColor: palette.card,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.footerIcon,
+                { backgroundColor: palette.primaryLight },
+              ]}
+            >
+              <Ionicons
+                name="construct-outline"
+                size={24}
+                color={palette.primary}
+              />
+            </View>
 
-          <SettingRow
-            icon="shield-checkmark-outline"
-            iconColor="#7C5CFF"
-            iconBg="rgba(124, 92, 255, 0.12)"
-            title="Security"
-            subtitle="JWT session authentication active"
-          />
-        </View>
+            <Text style={[styles.footerTitle, { color: palette.text }]}>
+              TMS Facilities & Maintenance
+            </Text>
 
-        {/* About */}
-        <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>ABOUT</Text>
-        <View
-          style={[
-            styles.sectionCard,
-            { backgroundColor: colors.surface, borderColor: colors.border }
-          ]}
-        >
-          <SettingRow
-            icon="document-text-outline"
-            iconColor={colors.textSecondary}
-            title="Terms of Service"
-          />
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          <SettingRow
-            icon="lock-closed-outline"
-            iconColor={colors.textSecondary}
-            title="Privacy Policy"
-          />
-        </View>
+            <Text
+              style={[
+                styles.footerSubtitle,
+                { color: palette.secondary },
+              ]}
+            >
+              Making campus maintenance simpler.
+            </Text>
 
-        <Text style={[styles.footerText, { color: colors.textMuted }]}>
-          Ticket Management System{'\n'}
-          © 2024 Enterprise Campus Solutions
-        </Text>
-      </ScrollView>
-    </View>
+            <Text style={[styles.version, { color: palette.secondary }]}>
+              Version 1.0.0
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
+    </ResponsiveContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
+
   scrollContent: {
-    padding: 16
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 35,
   },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 1,
-    marginBottom: 8,
-    marginTop: 8,
-    paddingHorizontal: 4
+
+  heroCard: {
+    backgroundColor: PURPLE,
+    borderRadius: 24,
+    padding: 22,
+    alignItems: 'center',
+    marginBottom: 27,
+    overflow: 'hidden',
   },
-  sectionCard: {
-    borderRadius: 14,
+
+  heroCircleOne: {
+    position: 'absolute',
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    top: -95,
+    right: -45,
+    backgroundColor: 'rgba(255,255,255,0.11)',
+  },
+
+  heroCircleTwo: {
+    position: 'absolute',
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    bottom: -85,
+    left: -35,
+    backgroundColor: 'rgba(30,15,95,0.18)',
+  },
+
+  heroIcon: {
+    width: 68,
+    height: 68,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
-    marginBottom: 8,
-    overflow: 'hidden'
+    borderColor: 'rgba(255,255,255,0.28)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
   },
+
+  heroTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+
+  heroSubtitle: {
+    marginTop: 7,
+    fontSize: 11,
+    lineHeight: 17,
+    color: '#E9E3FF',
+    textAlign: 'center',
+  },
+
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    backgroundColor: 'rgba(255,255,255,0.17)',
+    borderRadius: 22,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginTop: 16,
+  },
+
+  heroBadgeText: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#FFFFFF',
+  },
+
+  sectionHeading: {
+    marginTop: 4,
+    marginBottom: 13,
+  },
+
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+  },
+
+  sectionSubtitle: {
+    fontSize: 11,
+    lineHeight: 17,
+    marginTop: 5,
+  },
+
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 13,
-    paddingHorizontal: 14,
-    gap: 12
+    padding: 13,
+    minHeight: 76,
+    borderWidth: 1,
+    borderRadius: 17,
+    marginBottom: 10,
   },
-  settingIconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+
+  settingIcon: {
+    width: 43,
+    height: 43,
+    borderRadius: 14,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center'
+    marginRight: 12,
   },
-  settingTextCol: {
-    flex: 1
+
+  settingContent: {
+    flex: 1,
+    paddingRight: 8,
   },
+
   settingTitle: {
-    fontSize: 14,
-    fontWeight: '700'
-  },
-  settingSub: {
     fontSize: 12,
-    marginTop: 1
+    fontWeight: '900',
   },
-  divider: {
-    height: 1,
-    marginHorizontal: 14
+
+  settingSubtitle: {
+    fontSize: 10,
+    lineHeight: 15,
+    marginTop: 5,
   },
-  footerText: {
-    fontSize: 11,
+
+  themeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 9,
+  },
+
+  themeBadgeText: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+
+  footerCard: {
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 21,
+    alignItems: 'center',
+    marginTop: 15,
+  },
+
+  footerIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 13,
+  },
+
+  footerTitle: {
+    fontSize: 13,
+    fontWeight: '900',
     textAlign: 'center',
-    lineHeight: 16,
-    marginTop: 20
-  }
+  },
+
+  footerSubtitle: {
+    fontSize: 10,
+    textAlign: 'center',
+    marginTop: 6,
+  },
+
+  version: {
+    fontSize: 10,
+    marginTop: 15,
+  },
 });
 
 export default SettingsScreen;
