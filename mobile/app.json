@@ -1,30 +1,31 @@
-{
-  "expo": {
-    "name": "TMS Facilities & Maintenance",
-    "slug": "tms-mobile",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "primaryColor": "#4F46E5",
-    "userInterfaceStyle": "light",
-    "icon": "./assets/tms-logo.png",
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/tms-logo.png",
-        "backgroundColor": "#0F172A"
+  {
+    "expo": {
+      "name": "TMS Facilities & Maintenance",
+      "slug": "tms-mobile",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "primaryColor": "#4F46E5",
+      "userInterfaceStyle": "light",
+      "icon": "./assets/tms-logo.png",
+      "ios": {
+        "supportsTablet": true
       },
-      "package": "com.chandru2301.tmsmobile"
-    },
-    "web": {
-      "bundler": "metro",
-      "favicon": "./assets/tms-logo.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "d182a7dc-c449-4c70-8861-ec44f51e8efd"
+      "android": {
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/tms-logo.png",
+          "backgroundColor": "#0F172A",
+          "usesCleartextTraffic": true
+        },
+        "package": "com.chandru2301.tmsmobile"
+      },
+      "web": {
+        "bundler": "metro",
+        "favicon": "./assets/tms-logo.png"
+      },
+      "extra": {
+        "eas": {
+          "projectId": "d182a7dc-c449-4c70-8861-ec44f51e8efd"
+        }
       }
     }
   }
-}
