@@ -118,7 +118,15 @@ const Button = ({
         />
       ) : (
         <View style={styles.contentRow}>
-          {icon ? <View style={styles.iconContainer}>{icon}</View> : null}
+         {icon ? (
+  <View style={styles.iconContainer}>
+    {typeof icon === 'string' ? (
+      <Text>{icon}</Text>
+    ) : (
+      icon
+    )}
+  </View>
+) : null}
           <Text
             style={[
               styles.baseText,

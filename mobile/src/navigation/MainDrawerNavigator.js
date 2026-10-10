@@ -15,6 +15,9 @@ import ReportsScreen from '../screens/reports/ReportsScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import SettingsScreen from '../screens/profile/SettingsScreen';
 
+// Master Hub
+import MasterHubScreen from '../screens/masters/MasterHubScreen';
+
 // Master screens
 import DepartmentMasterScreen from '../screens/masters/DepartmentMasterScreen';
 import ProgrammeMasterScreen from '../screens/masters/ProgrammeMasterScreen';
@@ -37,6 +40,7 @@ const ComplaintsStackScreen = () => (
       name="ComplaintList"
       component={ComplaintListScreen}
     />
+
     <Stack.Screen
       name="ComplaintDetail"
       component={ComplaintDetailScreen}
@@ -117,13 +121,16 @@ const RolesStack = () => (
 const MainDrawerNavigator = () => {
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
 
-  // Prevent registering an invalid Dashboard component.
+  // Validate Dashboard component
   if (typeof DashboardScreen !== 'function') {
     console.error(
       'DashboardScreen is not a valid component. Check DashboardScreen.js export.'
     );
+
     return null;
   }
+
+  const canManageMasters = Boolean(isSuperAdmin || isAdmin);
 
   return (
     <Drawer.Navigator
@@ -133,17 +140,20 @@ const MainDrawerNavigator = () => {
       screenOptions={{
         headerShown: false,
         drawerType: 'front',
+
         drawerStyle: {
           width: 300,
           backgroundColor: 'transparent',
           borderTopRightRadius: 20,
           borderBottomRightRadius: 20,
         },
+
         overlayColor: 'rgba(0, 0, 0, 0.6)',
         swipeEdgeWidth: 50,
         swipeMinDistance: 5,
       }}
     >
+      {/* Main screens */}
       <Drawer.Screen
         name="Dashboard"
         component={DashboardScreen}
@@ -165,8 +175,13 @@ const MainDrawerNavigator = () => {
       />
 
       {/* Master screens: Admin and SuperAdmin only */}
-      {(isSuperAdmin || isAdmin) && (
+      {canManageMasters && (
         <>
+          <Drawer.Screen
+            name="MasterHub"
+            component={MasterHubScreen}
+          />
+
           <Drawer.Screen
             name="Departments"
             component={DepartmentsStack}

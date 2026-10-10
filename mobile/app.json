@@ -14,11 +14,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/tms-logo.png",
         "backgroundColor": "#0F172A"
-      }
+      },
+      "package": "com.chandru2301.tmsmobile"
     },
     "web": {
       "bundler": "metro",
       "favicon": "./assets/tms-logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d182a7dc-c449-4c70-8861-ec44f51e8efd"
+      }
     }
   }
 }
